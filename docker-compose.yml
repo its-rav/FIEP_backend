@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  fiep_api:
+    image: ${DOCKER_REGISTRY-}fiepapi
+    build:
+      context: .
+      dockerfile: FIEP_API/Dockerfile
