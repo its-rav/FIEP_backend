@@ -6,6 +6,18 @@
     },
     "secrets1": {
       "type": "secrets.user"
+    },
+    "redis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Cache/Redis/FIEPAPIcache",
+      "type": "redis.azure",
+      "connectionId": "CacheConnection",
+      "secretStore": "LocalSecretsFile"
+    },
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup')]/providers/Microsoft.Sql/servers/feip-sql-server/databases/FEIP_be_db",
+      "type": "mssql.azure",
+      "connectionId": "MSSQL_API_DB_CONNECTION_STRING",
+      "secretStore": "LocalSecretsFile"
     }
   }
 }
