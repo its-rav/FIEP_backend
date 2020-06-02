@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["FIEP_API/FIEP_API.csproj", "FIEP_API/"]
+COPY ["FIEP_API/keys/*", "FIEP_API/keys/*"]
 RUN dotnet restore "FIEP_API/FIEP_API.csproj"
 COPY . .
 WORKDIR "/src/FIEP_API"
