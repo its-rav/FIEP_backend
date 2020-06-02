@@ -12,6 +12,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 
 namespace FIEP_API
 {
@@ -43,6 +45,11 @@ namespace FIEP_API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.GetApplicationDefault(),
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
