@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FIEP_API", "FIEP_API\FIEP_API.csproj", "{56B0F84B-F1AB-43DC-A258-B661E347FE6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FIEP_API", "FIEP_API\FIEP_API.csproj", "{56B0F84B-F1AB-43DC-A258-B661E347FE6D}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{F61EB35E-658E-4F95-B1A0-E65A4C8F3CB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DateTier", "..\DateTier\DateTier.csproj", "{15B4B002-9E3D-4E9C-9440-585D4480280C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessTier", "..\BusinessTier\BusinessTier.csproj", "{C4BC8DA0-3D9C-4D2E-B9ED-D86F66DEE369}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{F61EB35E-658E-4F95-B1A0-E65A4C8F3CB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F61EB35E-658E-4F95-B1A0-E65A4C8F3CB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F61EB35E-658E-4F95-B1A0-E65A4C8F3CB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15B4B002-9E3D-4E9C-9440-585D4480280C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B4B002-9E3D-4E9C-9440-585D4480280C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B4B002-9E3D-4E9C-9440-585D4480280C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B4B002-9E3D-4E9C-9440-585D4480280C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4BC8DA0-3D9C-4D2E-B9ED-D86F66DEE369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4BC8DA0-3D9C-4D2E-B9ED-D86F66DEE369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4BC8DA0-3D9C-4D2E-B9ED-D86F66DEE369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4BC8DA0-3D9C-4D2E-B9ED-D86F66DEE369}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
