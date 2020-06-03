@@ -22,7 +22,7 @@ namespace DataTier.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? ModifyDate { get; set; }
 
-        public virtual Group Group { get; set; }
+        public virtual GroupInformation Group { get; set; }
         public virtual ICollection<EventSubscription> EventSubscription { get; set; }
         public virtual ICollection<Post> Post { get; set; }
     }

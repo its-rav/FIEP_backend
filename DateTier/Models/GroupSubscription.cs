@@ -10,7 +10,7 @@ namespace DataTier.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? ModifyDate { get; set; }
 
-        public virtual Group Group { get; set; }
-        public virtual User User { get; set; }
+        public virtual GroupInformation Group { get; set; }
+        public virtual UserInformation User { get; set; }
     }
 }
