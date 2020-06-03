@@ -11,6 +11,6 @@ namespace DataTier.Models
         public DateTime? ModifyDate { get; set; }
 
         public virtual Event Event { get; set; }
-        public virtual User User { get; set; }
+        public virtual UserInformation User { get; set; }
     }
 }

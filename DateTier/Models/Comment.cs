@@ -12,7 +12,7 @@ namespace DataTier.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? ModifyDate { get; set; }
 
-        public virtual User CommentOwner { get; set; }
+        public virtual UserInformation CommentOwner { get; set; }
         public virtual Post Post { get; set; }
     }
 }

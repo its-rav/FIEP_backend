@@ -7,12 +7,12 @@ namespace DataTier.Models
     {
         public Role()
         {
-            User = new HashSet<User>();
+            UserInformation = new HashSet<UserInformation>();
         }
 
         public int RoleId { get; set; }
         public string Rolename { get; set; }
 
-        public virtual ICollection<User> User { get; set; }
+        public virtual ICollection<UserInformation> UserInformation { get; set; }
     }
 }
