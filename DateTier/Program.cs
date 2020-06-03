@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DateTier
+namespace DataTier
 {
     class Program
     {
