@@ -23,7 +23,6 @@ namespace DataTier.Models
         public virtual DbSet<GroupInformation> GroupInformation { get; set; }
         public virtual DbSet<GroupSubscription> GroupSubscription { get; set; }
         public virtual DbSet<Post> Post { get; set; }
-        public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
 
@@ -262,21 +261,6 @@ namespace DataTier.Models
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK__Post__EventID__02084FDA");
-            });
-
-            modelBuilder.Entity<Product>(entity =>
-            {
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.CreateDate).HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.ModifyDate).HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.ProductName)
-                    .HasMaxLength(128)
-                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Role>(entity =>
