@@ -6,9 +6,9 @@ namespace DataTier.Models
 {
     public partial class FEIP_be_dbContext : DbContext
     {
-        public FEIP_be_dbContext()
-        {
-        }
+        //public FEIP_be_dbContext()
+        //{
+        //}
 
         public FEIP_be_dbContext(DbContextOptions<FEIP_be_dbContext> options)
             : base(options)
@@ -26,14 +26,14 @@ namespace DataTier.Models
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=tcp:feip-sql-server.database.windows.net,1433;Database=FEIP_be_db;Trusted_Connection=False;User Id=publicuser;Password=feip_str0ngpwd;MultipleActiveResultSets=true");
-            }
-        }
+//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//        {
+//            if (!optionsBuilder.IsConfigured)
+//            {
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+//                optionsBuilder.UseSqlServer("Server=SE130462;Database=FEIP_be_db;Trusted_Connection=True;User Id=sa;Password=26651199;MultipleActiveResultSets=true");
+//            }
+//        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
