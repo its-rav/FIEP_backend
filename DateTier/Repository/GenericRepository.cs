@@ -1,4 +1,5 @@
-﻿using DataTier.Models;
+﻿
+using DataTier.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,10 +10,10 @@ namespace DataTier.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected SWDAssignmentContext _context;
+        protected FEIP_be_dbContext _context;
         protected DbSet<T> table = null;
 
-        public GenericRepository(SWDAssignmentContext context)
+        public GenericRepository(FEIP_be_dbContext context)
         {
             this._context = context;
             table = _context.Set<T>();
