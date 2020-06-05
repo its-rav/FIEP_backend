@@ -70,22 +70,26 @@ namespace DataTier.Models
                     .WithMany(p => p.Comment)
                     .HasForeignKey(d => d.CommentOwnerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Comment__Comment__07C12930");
+                    .HasConstraintName("FK__Comment__Comment__628FA481");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Comment)
                     .HasForeignKey(d => d.PostId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Comment__PostID__06CD04F7");
+                    .HasConstraintName("FK__Comment__PostID__619B8048");
             });
 
             modelBuilder.Entity<Event>(entity =>
             {
                 entity.HasIndex(e => e.ActivityId)
-                    .HasName("UQ__Event__45F4A7F046848CFB")
+                    .HasName("UQ__Event__45F4A7F0733D507E")
                     .IsUnique();
 
                 entity.Property(e => e.EventId).HasColumnName("EventID");
+
+                entity.Property(e => e.EventName)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ActivityId).HasColumnName("ActivityID");
 
@@ -117,7 +121,7 @@ namespace DataTier.Models
                     .WithMany(p => p.Event)
                     .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Event__GroupID__72C60C4A");
+                    .HasConstraintName("FK__Event__GroupID__4D94879B");
             });
 
             modelBuilder.Entity<EventActivity>(entity =>
@@ -135,19 +139,19 @@ namespace DataTier.Models
                     .HasPrincipalKey(p => p.ActivityId)
                     .HasForeignKey(d => d.ActivityId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EventActi__Activ__787EE5A0");
+                    .HasConstraintName("FK__EventActi__Activ__534D60F1");
 
                 entity.HasOne(d => d.ActivityType)
                     .WithMany()
                     .HasForeignKey(d => d.ActivityTypeId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EventActi__Activ__797309D9");
+                    .HasConstraintName("FK__EventActi__Activ__5441852A");
             });
 
             modelBuilder.Entity<EventSubscription>(entity =>
             {
                 entity.HasKey(e => new { e.EventId, e.UserId })
-                    .HasName("PK__EventSub__A83C44BAAB0CE0C4");
+                    .HasName("PK__EventSub__A83C44BA5A6935AE");
 
                 entity.Property(e => e.EventId).HasColumnName("EventID");
 
@@ -165,21 +169,25 @@ namespace DataTier.Models
                     .WithMany(p => p.EventSubscription)
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EventSubs__Event__7C4F7684");
+                    .HasConstraintName("FK__EventSubs__Event__571DF1D5");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.EventSubscription)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__EventSubs__UserI__7D439ABD");
+                    .HasConstraintName("FK__EventSubs__UserI__5812160E");
             });
 
             modelBuilder.Entity<GroupInformation>(entity =>
             {
                 entity.HasKey(e => e.GroupId)
-                    .HasName("PK__GroupInf__149AF30A29695554");
+                    .HasName("PK__GroupInf__149AF30AA241754E");
 
                 entity.Property(e => e.GroupId).HasColumnName("GroupID");
+
+                entity.Property(e => e.GroupImageUrl)
+                    .HasMaxLength(128)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.CreateDate)
                     .HasColumnType("datetime")
@@ -198,13 +206,13 @@ namespace DataTier.Models
                     .WithMany(p => p.GroupInformation)
                     .HasForeignKey(d => d.GroupManagerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GroupInfo__Group__656C112C");
+                    .HasConstraintName("FK__GroupInfo__Group__403A8C7D");
             });
 
             modelBuilder.Entity<GroupSubscription>(entity =>
             {
                 entity.HasKey(e => new { e.GroupId, e.UserId })
-                    .HasName("PK__GroupSub__C5E27FC0F6F568A7");
+                    .HasName("PK__GroupSub__C5E27FC04F29AE34");
 
                 entity.Property(e => e.GroupId).HasColumnName("GroupID");
 
@@ -222,13 +230,13 @@ namespace DataTier.Models
                     .WithMany(p => p.GroupSubscription)
                     .HasForeignKey(d => d.GroupId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GroupSubs__Group__6A30C649");
+                    .HasConstraintName("FK__GroupSubs__Group__44FF419A");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.GroupSubscription)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GroupSubs__UserI__6B24EA82");
+                    .HasConstraintName("FK__GroupSubs__UserI__45F365D3");
             });
 
             modelBuilder.Entity<Post>(entity =>
@@ -260,7 +268,7 @@ namespace DataTier.Models
                     .WithMany(p => p.Post)
                     .HasForeignKey(d => d.EventId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Post__EventID__02084FDA");
+                    .HasConstraintName("FK__Post__EventID__5CD6CB2B");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -276,10 +284,10 @@ namespace DataTier.Models
             modelBuilder.Entity<UserInformation>(entity =>
             {
                 entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserInfo__1788CCACE91B1C36");
+                    .HasName("PK__UserInfo__1788CCACF97D6576");
 
                 entity.HasIndex(e => e.Email)
-                    .HasName("UQ__UserInfo__A9D10534245F1606")
+                    .HasName("UQ__UserInfo__A9D10534CED7840E")
                     .IsUnique();
 
                 entity.Property(e => e.UserId)
@@ -316,7 +324,7 @@ namespace DataTier.Models
                     .WithMany(p => p.UserInformation)
                     .HasForeignKey(d => d.RoleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserInfor__RoleI__628FA481");
+                    .HasConstraintName("FK__UserInfor__RoleI__3D5E1FD2");
             });
 
             OnModelCreatingPartial(modelBuilder);
