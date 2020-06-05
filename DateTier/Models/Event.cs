@@ -12,6 +12,7 @@ namespace DataTier.Models
         }
 
         public int EventId { get; set; }
+        public string EventName { get; set; }
         public int ActivityId { get; set; }
         public int GroupId { get; set; }
         public string Location { get; set; }
