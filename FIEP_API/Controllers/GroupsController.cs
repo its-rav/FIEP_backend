@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessTier.DTO;
-using BusinessTier.Response;
 using DataTier.Models;
 using DataTier.UOW;
 using Microsoft.AspNetCore.Http;
@@ -33,22 +32,14 @@ namespace FIEP_API.Controllers
                 };
                 listOfGroups.Add(groupDTO);
             }
-            return Ok(new ResponseBase<List<GroupDTO>>()
-            {
-                ErrorCode = 0,
-                Data = listOfGroups
-            });
+            return Ok(listOfGroups);
         }
 
         [HttpGet("{id}")]
         public ActionResult GetGroup(int id)
         {
             var group = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == id);
-            return Ok(new ResponseBase<GroupInformation>()
-            {
-                ErrorCode = 0,
-                Data = group
-            });
+            return Ok(group);
         }
     }
 }

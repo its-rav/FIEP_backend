@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BusinessTier.Response;
 using DataTier.Models;
 using DataTier.Repository;
 using DataTier.UOW;
@@ -37,11 +36,7 @@ namespace FIEP_API.Controllers
             string email = userRecord.Email;
             if(!email.Substring(email.IndexOf("@") + 1).Equals("fpt.edu.vn"))
             {
-                return Ok(new ResponseBase<string>()
-                {
-                    ErrorCode = 400,
-                    ErrorMessage = "Invalid FPT education email"
-                });
+                return Unauthorized();
             }
             string userFullName = displayName.Substring(0, displayName.IndexOf("(") - 1);
 
@@ -62,11 +57,7 @@ namespace FIEP_API.Controllers
             }
 
             string customToken = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(decodedToken.Uid);
-            return Ok(new ResponseBase<String>()
-            {
-                ErrorCode = 0,
-                Data = customToken
-            });
+            return Ok(customToken);
         }
     }
 }
