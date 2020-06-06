@@ -6,3 +6,19 @@ services:
     build:
       context: .
       dockerfile: FIEP_API/Dockerfile
+    depends_on:
+      - mssql
+  mssql:
+    container_name: mssql
+    #image: "microsoft/mssql-server-linux:latest"
+    build:
+      context: .
+      dockerfile: MSSQL/Dockerfile
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=feip_str0ngpwd
+      - MSSQL_PID=Express
+    ports:
+      - "8089:1433"
+    volumes:
+     - /MSSQL/data:/var/opt/mssql - /var/opt/mssql/data
