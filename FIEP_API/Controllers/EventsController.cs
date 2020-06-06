@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessTier.DTO;
-using BusinessTier.Response;
 using DataTier.Models;
 using DataTier.UOW;
 using Microsoft.AspNetCore.Http;
@@ -37,10 +36,7 @@ namespace FIEP_API.Controllers
                 };
                 listOfUpCommingEvents.Add(eventDTO);
             }
-            return Ok(new ResponseBase<List<EventDTO>>() {
-                ErrorCode = 0,
-                Data = listOfUpCommingEvents
-            });
+            return Ok(listOfUpCommingEvents);
         }
     }
 }
