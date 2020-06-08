@@ -32,14 +32,13 @@ steps:
     SonarCloud: 'SonarCloud'
     organization: 'swdassignment'
     scannerMode: 'MSBuild'
-    projectKey: 'swd_assignment'
+    projectKey: 'swd_assigment'
     projectName: 'FPT Internal Event Plaform'
 
 - task: MSBuild@1
   inputs:
     solution: '**/*.sln'
     msbuildArchitecture: 'x64'
-    clean: true
 
 - task: VSTest@2
   inputs:
