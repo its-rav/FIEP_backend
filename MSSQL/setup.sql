@@ -52,7 +52,6 @@ CREATE TABLE ActivityType (
 CREATE TABLE Event (
 	EventID INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
 	EventName VARCHAR(128),
-	ActivityID INT NOT NULL UNIQUE,
 	GroupID INT NOT NULL,
 	FOREIGN KEY (GroupID) REFERENCES GroupInformation(GroupID),
 	Location VARCHAR(128),
@@ -65,8 +64,9 @@ CREATE TABLE Event (
 );
 
 CREATE TABLE EventActivity (
-	ActivityID INT NOT NULL,
-	FOREIGN KEY (ActivityID) REFERENCES Event(ActivityID),
+	ActivityID INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+	EventID INT NOT NULL,
+	FOREIGN KEY (EventID) REFERENCES Event(EventID),
 	ActivityTypeId INT NOT NULL ,
 	FOREIGN KEY (ActivityTypeId) REFERENCES ActivityType(ActivityTypeId),
 	ActivityTypeDescription VARCHAR(256),
@@ -158,28 +158,28 @@ INSERT INTO ActivityType(ActivityTypeDescription)
 VALUES('Welcome Newcomers');
 
 --Event--
-INSERT INTO Event(ActivityID,GroupID,EventName,Location,TimeOccur)
-VALUES(1,1,'Welcome FPT','Hall Of FPT University', '06-06-2020');
-INSERT INTO Event(ActivityID,GroupID,EventName,Location,TimeOccur)
-VALUES(2,3,'Welcome FPT','F-Tech Tower', '06-06-2020');
-INSERT INTO Event(ActivityID,GroupID,EventName,Location,TimeOccur)
-VALUES(3,2,'Welcome FPT','FSOFT-Town-1', '06-06-2020');
-INSERT INTO Event(ActivityID,GroupID,EventName,Location,TimeOccur)
-VALUES(4,5,'Welcome FPT','FSOFT-Town-2', '06-06-2020');
-INSERT INTO Event(ActivityID,GroupID,EventName,Location,TimeOccur)
-VALUES(5,2,'Welcome FPT','FSOFT-Town-3', '06-06-2020');
-INSERT INTO Event(ActivityID,GroupID,EventName,Location,TimeOccur)
-VALUES(6,6,'Welcome FPT','FPT Greenwich', '06-06-2020');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
+VALUES(1,'Welcome FPT','Hall Of FPT University', '06-06-2020');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
+VALUES(3,'Welcome FPT','F-Tech Tower', '06-06-2020');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
+VALUES(2,'Welcome FPT','FSOFT-Town-1', '06-06-2020');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
+VALUES(5,'Welcome FPT','FSOFT-Town-2', '06-06-2020');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
+VALUES(2,'Welcome FPT','FSOFT-Town-3', '06-06-2020');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
+VALUES(6,'Welcome FPT','FPT Greenwich', '06-06-2020');
 
 --EventActivity--
-INSERT INTO EventActivity(ActivityID,ActivityTypeId,ActivityTypeDescription)
-VALUES(1,1,'Great show about music');
-INSERT INTO EventActivity(ActivityID,ActivityTypeId,ActivityTypeDescription)
-VALUES(2,2,'Teambuilding with newcomers');
-INSERT INTO EventActivity(ActivityID,ActivityTypeId,ActivityTypeDescription)
-VALUES(3,2,'Get along with newcomers');
-INSERT INTO EventActivity(ActivityID,ActivityTypeId,ActivityTypeDescription)
-VALUES(4,1,'Try be the best of yourself');
+INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
+VALUES(1,'Great show about music',1);
+INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
+VALUES(2,'Teambuilding with newcomers',1);
+INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
+VALUES(2,'Get along with newcomers',2);
+INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
+VALUES(1,'Try be the best of yourself',3);
 	
 
 --EventSubscription--
