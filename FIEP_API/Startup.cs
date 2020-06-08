@@ -17,6 +17,7 @@ using DataTier.Repository;
 using DataTier.UOW;
 using BusinessTier.Extensions;
 using Microsoft.OpenApi.Models;
+using System.IO;
 
 namespace FIEP_API
 {
@@ -73,11 +74,15 @@ namespace FIEP_API
                 //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string
                 c.RoutePrefix = string.Empty;
             });
-
-            FirebaseApp.Create(new AppOptions()
+            var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "fiep-86d04-firebase-adminsdk-davhp-ac304e11a7.json");
+            FirebaseApp.Create(new AppOptions
             {
-                Credential = GoogleCredential.GetApplicationDefault(),
+                Credential = GoogleCredential.FromFile(pathToKey)
             });
+            //FirebaseApp.Create(new AppOptions()
+            //{
+            //    Credential = GoogleCredential.GetApplicationDefault(),
+            //});
 
             if (env.IsDevelopment())
             {

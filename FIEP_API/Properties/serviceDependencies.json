@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "secrets1": {
-      "type": "secrets",
-      "connectionId": "ASPNETCORE_HOSTINGSTARTUP__KEYVAULT__CONFIGURATIONVAULT"
-    },
     "appInsights1": {
       "type": "appInsights",
       "connectionId": "APPINSIGHTS_INSTRUMENTATIONKEY"
@@ -12,9 +8,13 @@
       "type": "redis",
       "connectionId": "CacheConnection"
     },
+    "secrets1": {
+      "type": "secrets",
+      "connectionId": "ASPNETCORE_HOSTINGSTARTUP__KEYVAULT__CONFIGURATIONVAULT"
+    },
     "mssql1": {
       "type": "mssql",
-      "connectionId": "MSSQL_API_DB_CONNECTION_STRING"
+      "connectionId": "DatabaseConnectionString"
     }
   }
 }
