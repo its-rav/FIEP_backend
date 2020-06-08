@@ -13,10 +13,8 @@ namespace DataTier.Models
 
         public int EventId { get; set; }
         public string EventName { get; set; }
-        public int ActivityId { get; set; }
         public int GroupId { get; set; }
         public string Location { get; set; }
-        public bool? IsExpired { get; set; }
         public int? ApprovalState { get; set; }
         public string ImageUrl { get; set; }
         public DateTime? TimeOccur { get; set; }
