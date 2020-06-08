@@ -1,7 +1,7 @@
-CREATE DATABASE FEIP_be_db;
+CREATE DATABASE FIEP;
 GO
 
-USE FEIP_be_db;
+USE FIEP;
 GO
 
 CREATE TABLE Role (
@@ -44,7 +44,7 @@ CREATE TABLE GroupSubscription (
 
 CREATE TABLE ActivityType (
 	ActivityTypeId INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
-	ActivityTypeDescription VARCHAR(256),
+	ActivityTypeName VARCHAR(256),
 );
 
 
@@ -55,7 +55,6 @@ CREATE TABLE Event (
 	GroupID INT NOT NULL,
 	FOREIGN KEY (GroupID) REFERENCES GroupInformation(GroupID),
 	Location VARCHAR(128),
-	IsExpired BIT DEFAULT 0,
 	ApprovalState INT DEFAULT 0, --1: NOT_APPROVED, 0 : NOT_YET_APPROVED, 1 : APPROVED
 	ImageUrl VARCHAR(256),
 	TimeOccur DATETIME,
@@ -64,12 +63,12 @@ CREATE TABLE Event (
 );
 
 CREATE TABLE EventActivity (
-	ActivityID INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+	ActivityID INT NOT NULL IDENTITY(1,1),
 	EventID INT NOT NULL,
 	FOREIGN KEY (EventID) REFERENCES Event(EventID),
 	ActivityTypeId INT NOT NULL ,
 	FOREIGN KEY (ActivityTypeId) REFERENCES ActivityType(ActivityTypeId),
-	ActivityTypeDescription VARCHAR(256),
+	EventActivityDescription VARCHAR(256),
 );
 
 
@@ -152,10 +151,14 @@ INSERT INTO GroupSubscription(GroupID,UserID)
 VALUES(1,'daf78774-feb8-46ab-b8ab-de1439559ed8');
 
 --ActivityType--
-INSERT INTO ActivityType(ActivityTypeDescription)
+INSERT INTO ActivityType(ActivityTypeName)
 VALUES('Music Festival');
-INSERT INTO ActivityType(ActivityTypeDescription)
+INSERT INTO ActivityType(ActivityTypeName)
 VALUES('Welcome Newcomers');
+INSERT INTO ActivityType(ActivityTypeName)
+VALUES('Chess Tournament');
+INSERT INTO ActivityType(ActivityTypeName)
+VALUES('HACKATHON');
 
 --Event--
 INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
@@ -172,14 +175,14 @@ INSERT INTO Event(GroupID,EventName,Location,TimeOccur)
 VALUES(6,'Welcome FPT','FPT Greenwich', '06-06-2020');
 
 --EventActivity--
-INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
-VALUES(1,'Great show about music',1);
-INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
-VALUES(2,'Teambuilding with newcomers',1);
-INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
-VALUES(2,'Get along with newcomers',2);
-INSERT INTO EventActivity(ActivityTypeId,ActivityTypeDescription,EventID)
-VALUES(1,'Try be the best of yourself',3);
+INSERT INTO EventActivity(EventID,ActivityTypeId,EventActivityDescription)
+VALUES(1,1,'Great show about music');
+INSERT INTO EventActivity(ActivityID,ActivityTypeId,EventActivityDescription)
+VALUES(1,2,'Teambuilding with newcomers');
+INSERT INTO EventActivity(ActivityID,ActivityTypeId,EventActivityDescription)
+VALUES(2,2,'Get along with newcomers');
+INSERT INTO EventActivity(ActivityID,ActivityTypeId,EventActivityDescription)
+VALUES(3,4,'Try be the best of yourself');
 	
 
 --EventSubscription--
