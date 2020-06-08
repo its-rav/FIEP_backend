@@ -25,7 +25,6 @@ steps:
   inputs:
     command: 'restore'
     projects: '**/*.csproj'
-    restoreArguments: '--configuration $(BuildConfiguration)'
     feedsToUse: 'select'
 
 - task: SonarCloudPrepare@1
