@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup1')]/providers/Microsoft.KeyVault/vaults/FIEPAPIvault",
+      "type": "secrets.keyVault",
+      "connectionId": "ASPNETCORE_HOSTINGSTARTUP__KEYVAULT__CONFIGURATIONVAULT",
+      "secretStore": "AzureAppSettings"
+    },
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroup1')]/providers/Microsoft.Sql/servers/fiep-apidbserver/databases/FEIP_be_db",
+      "type": "mssql.azure",
+      "connectionId": "DatabaseConnectionString",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}
