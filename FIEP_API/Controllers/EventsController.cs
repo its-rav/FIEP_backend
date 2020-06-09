@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessTier.DTO;
+using BusinessTier.Fields;
+using BusinessTier.Request;
 using DataTier.Models;
 using DataTier.UOW;
 using Microsoft.AspNetCore.Http;
@@ -21,22 +23,87 @@ namespace FIEP_API.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetEvents()
+        public ActionResult GetEvents([FromQuery]GetEventsRequest request)
         {
-            var events = _unitOfWork.Repository<Event>().FindAllByProperty(x => x.IsExpired == false && x.ApprovalState == 1);
-            var fillteredByTimeOccurEvent = events.Where(x => ((DateTime)x.TimeOccur - DateTime.Now).TotalDays < 2).ToList();
-            var listOfUpCommingEvents = new List<EventDTO>();
-            foreach (var item in fillteredByTimeOccurEvent)
+            //apply filter
+            var listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll();
+            if (request.SearchParam.Length > 0)
+            {
+                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.SearchParam));
+            }
+            
+            if(request.ApproveState != 2)
+            {
+                listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState);
+            }
+            if (request.GroupId != 0)
+            {
+                listEventAfterFilter = listEventAfterFilter.Where(x => x.GroupId == request.GroupId);
+            }
+            if(request.IsUpComming)
+            {
+                listEventAfterFilter = listEventAfterFilter.Where(x => ((DateTime)x.TimeOccur - DateTime.Now).TotalDays < 2 
+                                                                    && ((DateTime)x.TimeOccur - DateTime.Now).TotalDays > 0);
+            }
+            //apply paging
+            var listEventsAfterPaging = listEventAfterFilter
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+            //apply sort
+            var listEventsAfterSort = new List<Event>();
+            switch (request.Field)
+            {
+                case EventFields.TimeOccur: //sort by time occur
+                    if (request.isDesc)
+                    {
+                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.TimeOccur).ToList();
+                    }
+                    else
+                    {
+                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.TimeOccur).ToList();
+                    }
+                    break;
+                case EventFields.Follower: //sort by number of follower
+                    if (request.isDesc)
+                    {
+                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Count).ToList();
+                    }
+                    else
+                    {
+                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Count).ToList();
+                    }
+                    break;
+            }
+
+            var listOfEvents = new List<EventDTO>();
+            foreach (var item in listEventsAfterSort)
             {
                 EventDTO eventDTO = new EventDTO()
                 {
+                    EventId = item.EventId,
                     EventName = item.EventName,
                     EventImageUrl = item.ImageUrl,
                     TimeOccur = (DateTime)item.TimeOccur
                 };
-                listOfUpCommingEvents.Add(eventDTO);
+                listOfEvents.Add(eventDTO);
             }
-            return Ok(listOfUpCommingEvents);
+            return Ok(new {
+                data = listOfEvents,
+                totalPages = (listEventAfterFilter.ToList().Count/request.PageSize)
+            });
+        }
+        [HttpGet("{id}")]
+        public ActionResult GetEvent(int id)
+        {
+            var result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == id);
+            EventDTO eventDTO = new EventDTO()
+            {
+                EventName = result.EventName,
+                EventImageUrl = result.ImageUrl,
+                TimeOccur = (DateTime)result.TimeOccur
+            };
+            return Ok(result);
         }
     }
 }

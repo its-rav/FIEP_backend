@@ -14,7 +14,10 @@ namespace BusinessTier.Extensions
         public static IServiceCollection AddMonitoringServicesDBConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             serviceCollection.AddDbContext<FIEPContext>(options =>
-                 options.UseSqlServer(configuration.GetConnectionString("DatabaseConnectionString")));
+            {
+                options.UseSqlServer(configuration.GetConnectionString("DatabaseConnectionString"));
+                options.UseLazyLoadingProxies();
+            });
             return serviceCollection;
         }
     }

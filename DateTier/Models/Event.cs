@@ -20,7 +20,7 @@ namespace DataTier.Models
         public DateTime? TimeOccur { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? ModifyDate { get; set; }
-
+        public Boolean? IsExpired { get; set; }
         public virtual GroupInformation Group { get; set; }
         public virtual ICollection<EventSubscription> EventSubscription { get; set; }
         public virtual ICollection<Post> Post { get; set; }

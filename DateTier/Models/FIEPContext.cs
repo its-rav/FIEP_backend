@@ -109,6 +109,8 @@ namespace DataTier.Models
 
                 entity.Property(e => e.TimeOccur).HasColumnType("datetime");
 
+                entity.Property(e => e.IsExpired).HasColumnType("bit");    
+
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.Event)
                     .HasForeignKey(d => d.GroupId)
