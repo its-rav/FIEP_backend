@@ -25,7 +25,8 @@ namespace FIEP_API.Controllers
             var groups = _unitOfWork.Repository<GroupInformation>().GetAll().ToList();
             var listOfGroups = new List<GroupDTO>();
             foreach (var item in groups)
-            {   GroupDTO groupDTO = new GroupDTO()
+            {
+                GroupDTO groupDTO = new GroupDTO()
                 {
                     GroupName = item.GroupName,
                     GroupImageUrl = item.GroupImageUrl,
@@ -39,7 +40,13 @@ namespace FIEP_API.Controllers
         public ActionResult GetGroup(int id)
         {
             var group = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == id);
-            return Ok(group);
+            var groupDTO = new GroupDTO()
+            {
+                GroupName = group.GroupName,
+                GroupImageUrl = group.GroupImageUrl,
+                GroupFollower = group.GroupSubscription.Count
+            };
+            return Ok(groupDTO);
         }
     }
 }

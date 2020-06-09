@@ -34,7 +34,7 @@ namespace FIEP_API.Controllers
 
             string displayName = userRecord.DisplayName;
             string email = userRecord.Email;
-            if(!email.Substring(email.IndexOf("@") + 1).Equals("fpt.edu.vn"))
+            if (!email.Substring(email.IndexOf("@") + 1).Equals("fpt.edu.vn"))
             {
                 return Unauthorized();
             }
