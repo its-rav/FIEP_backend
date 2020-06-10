@@ -40,12 +40,14 @@ CREATE TABLE GroupSubscription (
 	FOREIGN KEY (UserId) REFERENCES UserInformation(UserID),
 	CreateDate DATETIME DEFAULT GETDATE() ,
 	ModifyDate DATETIME DEFAULT GETDATE(),
+	IsDeleted BIT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (GroupID,UserID)
 );
 
 CREATE TABLE ActivityType (
 	ActivityTypeId INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
 	ActivityTypeName VARCHAR(256),
+	IsDeleted BIT DEFAULT 0 NOT NULL,
 );
 
 
@@ -70,6 +72,7 @@ CREATE TABLE EventActivity (
 	EventID INT NOT NULL,
 	FOREIGN KEY (EventID) REFERENCES Event(EventID),
 	ActivityTypeId INT NOT NULL ,
+	IsDeleted BIT DEFAULT 0 NOT NULL,
 	FOREIGN KEY (ActivityTypeId) REFERENCES ActivityType(ActivityTypeId),
 	EventActivityDescription VARCHAR(256),
 );
