@@ -7,5 +7,6 @@ namespace DataTier.Models
     {
         public int ActivityTypeId { get; set; }
         public string ActivityTypeName { get; set; }
+        public Boolean IsDeleted { get; set; }
     }
 }

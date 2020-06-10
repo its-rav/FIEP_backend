@@ -86,6 +86,7 @@ CREATE TABLE EventSubscription (
 	FOREIGN KEY (UserID) REFERENCES UserInformation(UserID),
 	CreateDate DATETIME DEFAULT GETDATE() ,
 	ModifyDate DATETIME DEFAULT GETDATE(),
+	IsDeleted BIT DEFAULT 0,
 	PRIMARY KEY (EventID,UserID)
 );
 

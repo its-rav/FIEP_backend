@@ -42,10 +42,13 @@ namespace DataTier.Models
                 entity.Property(e => e.ActivityTypeName)
                     .HasMaxLength(256)
                     .IsUnicode(false);
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
             });
 
             modelBuilder.Entity<Comment>(entity =>
             {
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.CommentId)
                     .HasColumnName("CommentID")
                     .HasMaxLength(128)
@@ -109,7 +112,9 @@ namespace DataTier.Models
 
                 entity.Property(e => e.TimeOccur).HasColumnType("datetime");
 
-                entity.Property(e => e.IsExpired).HasColumnType("bit");    
+                entity.Property(e => e.IsExpired).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
 
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.Event)
@@ -130,6 +135,8 @@ namespace DataTier.Models
                     .HasMaxLength(256)
                     .IsUnicode(false);
 
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.EventId).HasColumnName("EventID");
 
                 entity.HasOne(d => d.ActivityType)
@@ -149,6 +156,8 @@ namespace DataTier.Models
             {
                 entity.HasKey(e => new { e.EventId, e.UserId })
                     .HasName("PK__EventSub__A83C44BA8B27F90A");
+
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
 
                 entity.Property(e => e.EventId).HasColumnName("EventID");
 
@@ -177,6 +186,8 @@ namespace DataTier.Models
 
             modelBuilder.Entity<GroupInformation>(entity =>
             {
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
+
                 entity.HasKey(e => e.GroupId)
                     .HasName("PK__GroupInf__149AF30AC85BD644");
 
@@ -208,6 +219,8 @@ namespace DataTier.Models
 
             modelBuilder.Entity<GroupSubscription>(entity =>
             {
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
+
                 entity.HasKey(e => new { e.GroupId, e.UserId })
                     .HasName("PK__GroupSub__C5E27FC0923CD7AF");
 
@@ -238,6 +251,8 @@ namespace DataTier.Models
 
             modelBuilder.Entity<Post>(entity =>
             {
+                entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
+
                 entity.Property(e => e.PostId)
                     .HasColumnName("PostID")
                     .ValueGeneratedNever();
@@ -280,6 +295,7 @@ namespace DataTier.Models
 
             modelBuilder.Entity<UserInformation>(entity =>
             {
+
                 entity.HasKey(e => e.UserId)
                     .HasName("PK__UserInfo__1788CCAC571F3792");
 
