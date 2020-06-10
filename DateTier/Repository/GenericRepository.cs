@@ -10,10 +10,10 @@ namespace DataTier.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected FEIP_be_dbContext _context;
+        protected FIEPContext _context;
         protected DbSet<T> table = null;
 
-        public GenericRepository(FEIP_be_dbContext context)
+        public GenericRepository(FIEPContext context)
         {
             this._context = context;
             table = _context.Set<T>();

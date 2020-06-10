@@ -6,6 +6,6 @@ namespace DataTier.Models
     public partial class ActivityType
     {
         public int ActivityTypeId { get; set; }
-        public string ActivityTypeDescription { get; set; }
+        public string ActivityTypeName { get; set; }
     }
 }

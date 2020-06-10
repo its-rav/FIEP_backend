@@ -1,4 +1,5 @@
-﻿using DataTier.Models;
+﻿
+using DataTier.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +13,11 @@ namespace BusinessTier.Extensions
     {
         public static IServiceCollection AddMonitoringServicesDBConfiguration(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            serviceCollection.AddDbContext<FEIP_be_dbContext>(options =>
-                 options.UseSqlServer(configuration.GetConnectionString("DatabaseConnectionString")));
+            serviceCollection.AddDbContext<FIEPContext>(options =>
+            {
+                options.UseSqlServer(configuration.GetConnectionString("DatabaseConnectionString"));
+                options.UseLazyLoadingProxies();
+            });
             return serviceCollection;
         }
     }

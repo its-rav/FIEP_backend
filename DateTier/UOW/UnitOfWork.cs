@@ -10,8 +10,8 @@ namespace DataTier.UOW
     public class UnitOfWork : IUnitOfWork
     {
 
-        private readonly FEIP_be_dbContext _context;
-        public UnitOfWork(FEIP_be_dbContext context)
+        private readonly FIEPContext _context;
+        public UnitOfWork(FIEPContext context)
         {
             _context = context;
         }
