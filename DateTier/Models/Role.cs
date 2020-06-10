@@ -12,7 +12,6 @@ namespace DataTier.Models
 
         public int RoleId { get; set; }
         public string Rolename { get; set; }
-
         public virtual ICollection<UserInformation> UserInformation { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace DataTier.Models
         public string ImageUrl { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? ModifyDate { get; set; }
-
+        public Boolean IsDeleted { get; set; }
         public virtual Event Event { get; set; }
         public virtual ICollection<Comment> Comment { get; set; }
     }

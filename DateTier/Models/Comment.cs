@@ -14,5 +14,7 @@ namespace DataTier.Models
 
         public virtual UserInformation CommentOwner { get; set; }
         public virtual Post Post { get; set; }
+
+        public Boolean IsDeleted { get; set; }
     }
 }
