@@ -30,6 +30,7 @@ namespace FIEP_API.Controllers
                 {
                     GroupName = item.GroupName,
                     GroupImageUrl = item.GroupImageUrl,
+                    GroupFollower = item.GroupSubscription.Count
                 };
                 listOfGroups.Add(groupDTO);
             }
