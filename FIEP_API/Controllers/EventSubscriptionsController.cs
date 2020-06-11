@@ -18,11 +18,5 @@ namespace FIEP_API.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        [HttpGet]
-        public ActionResult GetFollowingEventsOfUser([FromQuery] Guid UserID)
-        {
-            var result = _unitOfWork.Repository<EventSubscription>().FindAllByProperty(x => x.UserId.Equals(UserID));
-            return Ok(result);
-        }
     }
 }

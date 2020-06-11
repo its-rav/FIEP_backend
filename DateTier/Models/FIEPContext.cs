@@ -198,7 +198,7 @@ namespace DataTier.Models
                     .HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.GroupImageUrl)
-                    .HasMaxLength(128)
+                    .HasMaxLength(256)
                     .IsUnicode(false);
 
                 entity.Property(e => e.GroupName)
@@ -274,7 +274,7 @@ namespace DataTier.Models
                 entity.Property(e => e.PostContent)
                     .IsRequired()
                     .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.HasOne(d => d.Event)
                     .WithMany(p => p.Post)
