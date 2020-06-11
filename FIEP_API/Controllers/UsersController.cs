@@ -60,6 +60,7 @@ namespace FIEP_API.Controllers
                     Name = item.Fullname,
                     Mail = item.Email,
                     Userid = item.UserId,
+                    AvatarUlr = item.AvatarUrl
                 };
                 listOfUsers.Add(userDTO);
             }
@@ -79,6 +80,7 @@ namespace FIEP_API.Controllers
                 Name = result.Fullname,
                 Mail = result.Email,
                 Userid = result.UserId,
+                AvatarUlr = result.AvatarUrl
             };
             return Ok(userDTO);
         }

@@ -9,5 +9,6 @@ namespace BusinessTier.DTO
         public Guid Userid { get; set; }
         public string Mail { get; set; }
         public string Name { get; set; }
+        public string AvatarUlr { get; set; }
     }
 }
