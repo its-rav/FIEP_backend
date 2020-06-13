@@ -124,6 +124,7 @@ namespace FIEP_API.Controllers
             var result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == id && x.IsDeleted == false);
             EventDTO eventDTO = new EventDTO()
             {
+                EventId = result.EventId,
                 EventName = result.EventName,
                 EventImageUrl = result.ImageUrl,
                 TimeOccur = (DateTime)result.TimeOccur
