@@ -53,7 +53,7 @@ namespace FIEP_API.Controllers
             {
                 switch (request.FieldSize)
                 {
-                    case "s":
+                    case "short":
                         var postObj = new
                         {
                             postID = item.PostId,
@@ -62,7 +62,7 @@ namespace FIEP_API.Controllers
 
                         listOfPosts.Add(postObj);
                         break;
-                    case "m":
+                    case "medium":
                         var postObjm = new
                         {
                             postID = item.PostId,
@@ -138,7 +138,7 @@ namespace FIEP_API.Controllers
             {
                 switch (request.FieldSize)
                 {
-                    case "s":
+                    case "short":
                         var commentObj = new
                         {
                             commentId = item.CommentId,
@@ -147,7 +147,7 @@ namespace FIEP_API.Controllers
 
                         listOfComments.Add(commentObj);
                         break;
-                    case "m":
+                    case "medium":
                         var commentObjm = new
                         {
                             commentId = item.CommentId,

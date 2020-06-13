@@ -55,7 +55,7 @@ namespace FIEP_API.Controllers
             {
                 switch (request.FieldSize)
                 {
-                    case "s":
+                    case "short":
                         var groupObj = new
                         {
                             groupID = item.GroupId,
@@ -64,7 +64,7 @@ namespace FIEP_API.Controllers
 
                         listOfGroups.Add(groupObj);
                         break;
-                    case "m":
+                    case "medium":
                         var groupObjm = new
                         {
                             groupID = item.GroupId,
@@ -159,7 +159,7 @@ namespace FIEP_API.Controllers
             {
                 switch (request.FieldSize)
                 {
-                    case "s":
+                    case "short":
                         var eventObj = new
                         {
                             eventID = item.EventId,
@@ -168,7 +168,7 @@ namespace FIEP_API.Controllers
 
                         listOfEvents.Add(eventObj);
                         break;
-                    case "m":
+                    case "medium":
                         var eventObjm = new
                         {
                             eventID = item.EventId,

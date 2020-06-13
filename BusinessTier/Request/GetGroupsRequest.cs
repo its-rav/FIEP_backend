@@ -29,7 +29,7 @@ namespace BusinessTier.Request
 		public GroupFields Field { get; set; } = 0;
 		public Boolean isDesc { get; set; } = true;
 		//field param
-		private string _FieldSize = "l";
+		private string _FieldSize = "long";
 		public string FieldSize
 		{
 			get
@@ -38,7 +38,7 @@ namespace BusinessTier.Request
 			}
 			set
 			{
-				_FieldSize = (value.CompareTo("s") == 0 || value.CompareTo("m") == 0) ? value : "l";
+				_FieldSize = (value.CompareTo("short") == 0 || value.CompareTo("medium") == 0) ? value : "long";
 			}
 		}
 
