@@ -25,14 +25,14 @@ namespace FIEP_API.Controllers
         [HttpGet]
         public ActionResult GetEvents([FromQuery]GetEventsRequest request)
         {
-            //apply filter
-            var listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll();
+            
+            var listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
             if (request.SearchParam.Length > 0)
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.SearchParam));
             }
-            
-            if(request.ApproveState != 2)
+            //apply filter
+            if (request.ApproveState != 2)
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState);
             }
@@ -96,14 +96,14 @@ namespace FIEP_API.Controllers
         [HttpGet("{id}")]
         public ActionResult GetEvent(int id)
         {
-            var result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == id);
+            var result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == id && x.IsDeleted == false);
             EventDTO eventDTO = new EventDTO()
             {
                 EventName = result.EventName,
                 EventImageUrl = result.ImageUrl,
                 TimeOccur = (DateTime)result.TimeOccur
             };
-            return Ok(result);
+            return Ok(eventDTO);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace FIEP_API.Controllers
         [HttpGet("{id}")]
         public ActionResult GetGroup(int id)
         {
-            var group = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == id);
+            var group = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == id && x.IsDeleted == false);
             var groupDTO = new GroupDTO()
             {
                 GroupName = group.GroupName,
