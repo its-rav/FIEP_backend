@@ -5,8 +5,10 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class GetPostsRequest
+    public class GetGroupsRequest
     {
+		//Search param
+		public string Query { get; set; } = "";
 		//Paging param
 		const int maxPageSize = 10;
 
@@ -24,7 +26,7 @@ namespace BusinessTier.Request
 		}
 		public int PageNumber { get; set; } = 1;
 		//sort param
-		public PostFields Field { get; set; } = 0;
+		public GroupFields Field { get; set; } = 0;
 		public Boolean isDesc { get; set; } = true;
 		//field param
 		private string _FieldSize = "l";
@@ -39,7 +41,6 @@ namespace BusinessTier.Request
 				_FieldSize = (value.CompareTo("s") == 0 || value.CompareTo("m") == 0) ? value : "l";
 			}
 		}
-
 
 	}
 }

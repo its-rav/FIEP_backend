@@ -8,7 +8,7 @@ namespace BusinessTier.Request
     public class GetUsersRequest
     {
 		//Search param
-		public string SearchParam { get; set; } = "";
+		public string Query { get; set; } = "";
 		//Paging param
 		const int maxPageSize = 10;
 
