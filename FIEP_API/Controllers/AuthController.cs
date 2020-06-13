@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessTier.Request;
 using DataTier.Models;
 using DataTier.Repository;
 using DataTier.UOW;
@@ -22,11 +23,13 @@ namespace FIEP_API.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("login")]
-        public async Task<ActionResult> VerifyGoogleLogin([FromBody]Object request)
+        public async Task<ActionResult> VerifyGoogleLogin([FromBody]AuthRequest request)
         {
-            var valuesOfRequest = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.ToString());
-            string idToken;
-            valuesOfRequest.TryGetValue("idToken", out idToken);
+            //var valuesOfRequest = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.ToString());
+            //string idToken;
+            //valuesOfRequest.TryGetValue("idToken", out idToken);
+            string idToken = request.idToken;
+            string fcmToken = request.fcmToken;
 
             var auth = FirebaseAdmin.Auth.FirebaseAuth.DefaultInstance;
             FirebaseToken decodedToken = await auth.VerifyIdTokenAsync(idToken);
