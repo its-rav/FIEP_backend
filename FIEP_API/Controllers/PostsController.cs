@@ -23,7 +23,7 @@ namespace FIEP_API.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetPosts(GetPostsRequest request)
+        public ActionResult GetPosts([FromQuery]GetPostsRequest request)
         {
             var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
             //apply paging
