@@ -87,7 +87,7 @@ namespace FIEP_API
                 //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string
                 c.RoutePrefix = string.Empty;
             });
-            var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "fiep-266-firebase-adminsdk-1552y-de81d8b95d.json");
+            var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "fiep-e6602-firebase-adminsdk-x0cil-a24c1aff5b.json");
             FirebaseApp.Create(new AppOptions
             {
                 Credential = GoogleCredential.FromFile(pathToKey)
