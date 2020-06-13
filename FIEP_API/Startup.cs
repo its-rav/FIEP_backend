@@ -18,6 +18,7 @@ using DataTier.UOW;
 using BusinessTier.Extensions;
 using Microsoft.OpenApi.Models;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace FIEP_API
 {
@@ -37,7 +38,9 @@ namespace FIEP_API
             //sql connection
             services.AddMonitoringServicesDBConfiguration(Configuration);
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => {
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
             services.AddDistributedRedisCache(option =>
             {
@@ -84,7 +87,7 @@ namespace FIEP_API
                 //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string
                 c.RoutePrefix = string.Empty;
             });
-            var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "fiep-86d04-firebase-adminsdk-davhp-ac304e11a7.json");
+            var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "fiep-266-firebase-adminsdk-1552y-de81d8b95d.json");
             FirebaseApp.Create(new AppOptions
             {
                 Credential = GoogleCredential.FromFile(pathToKey)

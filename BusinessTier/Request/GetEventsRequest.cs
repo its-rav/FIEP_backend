@@ -8,10 +8,9 @@ namespace BusinessTier.Request
     public class GetEventsRequest
     {
 		//Search param
-		public string SearchParam { get; set; } = "";
+		public string Query { get; set; } = "";
 		//Filter param
 		private int _ApproveState = 1;
-		public int GroupId { get; set; } = 0;
 		public Boolean IsUpComming { get; set; } = false;
 		public int ApproveState
 		{
@@ -43,5 +42,19 @@ namespace BusinessTier.Request
 		//sort param
 		public EventFields Field { get; set; } = 0;
 		public Boolean isDesc { get; set; } = true;
+		//field param
+		private string _FieldSize = "l";
+		public string FieldSize {
+			get
+			{
+				return _FieldSize;
+			}
+			set
+			{
+				_FieldSize = (value.CompareTo("s") == 0 || value.CompareTo("m") == 0) ? value: "l";
+			}
+		}
+
+
 	}
 }

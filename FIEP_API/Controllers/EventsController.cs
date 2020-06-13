@@ -24,21 +24,16 @@ namespace FIEP_API.Controllers
 
         [HttpGet]
         public ActionResult GetEvents([FromQuery]GetEventsRequest request)
-        {
-            
+        {           
             var listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
-            if (request.SearchParam.Length > 0)
+            if (request.Query.Length > 0)
             {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.SearchParam));
+                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query));
             }
             //apply filter
             if (request.ApproveState != 2)
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState);
-            }
-            if (request.GroupId != 0)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.GroupId == request.GroupId);
             }
             if(request.IsUpComming)
             {
@@ -76,21 +71,51 @@ namespace FIEP_API.Controllers
                     break;
             }
 
-            var listOfEvents = new List<EventDTO>();
+            var listOfEvents = new List<dynamic>();
             foreach (var item in listEventsAfterSort)
             {
-                EventDTO eventDTO = new EventDTO()
+                switch (request.FieldSize)
                 {
-                    EventId = item.EventId,
-                    EventName = item.EventName,
-                    EventImageUrl = item.ImageUrl,
-                    TimeOccur = (DateTime)item.TimeOccur
-                };
-                listOfEvents.Add(eventDTO);
+                    case "s":
+                        var eventObj = new
+                        {
+                            eventID = item.EventId,
+                            eventName = item.EventName
+                        };
+
+                        listOfEvents.Add(eventObj);
+                        break;
+                    case "m":
+                        var eventObjm = new
+                        {
+                            eventID = item.EventId,
+                            eventName = item.EventName,
+                            imageUrl = item.ImageUrl,
+                            timeOccur = item.TimeOccur,
+                            location = item.Location
+                        };
+                        listOfEvents.Add(eventObjm);
+                        break;
+                    default:
+                        var eventObjl = new
+                        {
+                            eventID = item.EventId,
+                            eventName = item.EventName,
+                            imageUrl = item.ImageUrl,
+                            timeOccur = item.TimeOccur,
+                            location = item.Location,
+                            groupID = item.GroupId,
+                            createDate = item.CreateDate,
+                            approveState = item.ApprovalState
+                        };
+
+                        listOfEvents.Add(eventObjl);
+                        break;
+                }
             }
             return Ok(new {
                 data = listOfEvents,
-                totalPages = (listEventAfterFilter.ToList().Count/request.PageSize)
+                totalPages = Math.Ceiling((double)listEventAfterFilter.ToList().Count/request.PageSize)
             });
         }
         [HttpGet("{id}")]
@@ -105,5 +130,77 @@ namespace FIEP_API.Controllers
             };
             return Ok(eventDTO);
         }
+
+        [HttpGet("{eventID}/posts")]
+        public ActionResult GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsRequest request)
+        {
+            var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.EventId == eventID && x.IsDeleted == false);
+            //apply paging
+            var listPostsAfterPaging = listPostsAfterSearch
+               .Skip((request.PageNumber - 1) * request.PageSize)
+               .Take(request.PageSize)
+               .ToList();
+
+            //apply sort
+            var listPostsAfterSort = new List<Post>();
+            switch (request.Field)
+            {
+                case PostFields.CreateDate: //sort by time occur
+                    if (request.isDesc)
+                    {
+                        listPostsAfterSort = listPostsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
+                    }
+                    else
+                    {
+                        listPostsAfterSort = listPostsAfterPaging.OrderBy(x => x.CreateDate).ToList();
+                    }
+                    break;
+            }
+
+            var listOfPosts = new List<dynamic>();
+            foreach (var item in listPostsAfterSort)
+            {
+                switch (request.FieldSize)
+                {
+                    case "s":
+                        var postObj = new
+                        {
+                            postID = item.PostId,
+                            postContent = item.PostContent
+                        };
+
+                        listOfPosts.Add(postObj);
+                        break;
+                    case "m":
+                        var postObjm = new
+                        {
+                            postID = item.PostId,
+                            postContent = item.PostContent,
+                            imageUrl = item.ImageUrl,
+                            createDate = item.CreateDate
+                        };
+                        listOfPosts.Add(postObjm);
+                        break;
+                    default:
+                        var postObjl = new
+                        {
+                            postID = item.PostId,
+                            postContent = item.PostContent,
+                            imageUrl = item.ImageUrl,
+                            createDate = item.CreateDate,
+                            eventId = item.EventId
+                        };
+
+                        listOfPosts.Add(postObjl);
+                        break;
+                }
+            }
+            return Ok(new
+            {
+                data = listOfPosts,
+                totalPages = Math.Ceiling((double)listPostsAfterSearch.ToList().Count / request.PageSize)
+            });
+        }
+
     }
 }
