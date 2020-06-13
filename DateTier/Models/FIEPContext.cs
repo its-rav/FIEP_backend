@@ -26,14 +26,16 @@ namespace DataTier.Models
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-//                optionsBuilder.UseSqlServer("Server=SE130462;Database=FIEP;Trusted_Connection=True;User Id=sa;Password=26651199;MultipleActiveResultSets=true");
-//            }
-//        }
+        public virtual DbSet<UserFCMToken> UserFCMToken { get; set; }
+
+        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //        {
+        //            if (!optionsBuilder.IsConfigured)
+        //            {
+        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+        //                optionsBuilder.UseSqlServer("Server=SE130462;Database=FIEP;Trusted_Connection=True;User Id=sa;Password=26651199;MultipleActiveResultSets=true");
+        //            }
+        //        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -291,6 +293,21 @@ namespace DataTier.Models
                     .IsRequired()
                     .HasMaxLength(128)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<UserFCMToken>(entity =>
+            {
+                entity.HasKey(e => e.UserFCMId);
+
+                entity.Property(e => e.FCMToken).IsRequired()
+                    .HasMaxLength(2000)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.FCMToken)
+                    .HasForeignKey(d => d.UserID)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
             });
 
             modelBuilder.Entity<UserInformation>(entity =>

@@ -3,7 +3,12 @@ GO
 
 USE FIEP;
 GO
-
+CREATE table UserFCMToken(
+	UserFCMId int IDENTITY(1, 1) primary key,	
+	FCMToken VARCHAR(2000) unique,
+	UserID UNIQUEIDENTIFIER NOT NULL,
+	FOREIGN KEY (UserID) REFERENCES UserInformation(UserID),
+);
 CREATE TABLE Role (
 	RoleID INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
 	Rolename VARCHAR(128) NOT NULL,

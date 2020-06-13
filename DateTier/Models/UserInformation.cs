@@ -11,6 +11,7 @@ namespace DataTier.Models
             EventSubscription = new HashSet<EventSubscription>();
             GroupInformation = new HashSet<GroupInformation>();
             GroupSubscription = new HashSet<GroupSubscription>();
+            FCMToken = new HashSet<UserFCMToken>();
         }
 
         public Guid UserId { get; set; }
@@ -27,5 +28,6 @@ namespace DataTier.Models
         public virtual ICollection<EventSubscription> EventSubscription { get; set; }
         public virtual ICollection<GroupInformation> GroupInformation { get; set; }
         public virtual ICollection<GroupSubscription> GroupSubscription { get; set; }
+        public virtual ICollection<UserFCMToken> FCMToken { get; set; }
     }
 }
