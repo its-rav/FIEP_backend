@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessTier.DistributedCache;
 using BusinessTier.DTO;
 using BusinessTier.Fields;
 using BusinessTier.Request;
+using BusinessTier.ServiceWorkers;
 using DataTier.Models;
 using DataTier.UOW;
+using FirebaseAdmin.Messaging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,10 +19,14 @@ namespace FIEP_API.Controllers
     [ApiController]
     public class GroupsController : ControllerBase
     {
+        private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
-        public GroupsController(IUnitOfWork unitOfWork)
+        private NotificationPublisher _notificationPublisher;
+        public GroupsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher)
         {
             _unitOfWork = unitOfWork;
+            _cacheStore = cacheStore;
+            _notificationPublisher = notificationPublisher;
         }
         [HttpGet]
         public ActionResult GetGroups([FromQuery]GetGroupsRequest request)
@@ -201,6 +208,25 @@ namespace FIEP_API.Controllers
                 data = listOfEvents,
                 totalPages = Math.Ceiling((double)listEventAfterFilter.ToList().Count / request.PageSize)
             });
+        }
+
+        [HttpPut("{groupId}/notification")]
+        public async Task<ActionResult> CreatePushNotification([FromRoute] int groupId, [FromBody] CreateNotificationRequest request)
+        {
+            DataTier.Models.Notification notification = new DataTier.Models.Notification()
+            {
+                NotificationID=new Guid(),
+                Body = request.Body,
+                Title = request.Title,
+                ImageUrl = request.ImageUrl,
+                GroupId= groupId
+            };
+            _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
+            _unitOfWork.Commit();
+
+            _notificationPublisher.Publish(notification.NotificationID.ToString());
+
+            return Ok();
         }
     }
 }

@@ -2,24 +2,30 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessTier.DistributedCache;
 using BusinessTier.DTO;
 using BusinessTier.Fields;
 using BusinessTier.Request;
+using BusinessTier.ServiceWorkers;
 using DataTier.Models;
 using DataTier.UOW;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.Extensions.DependencyInjection;
 namespace FIEP_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class EventsController : ControllerBase
     {
+        private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
-        public EventsController(IUnitOfWork unitOfWork)
+        private NotificationPublisher _notificationPublisher;
+        public EventsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher)
         {
             _unitOfWork = unitOfWork;
+            _cacheStore = cacheStore;
+            _notificationPublisher = notificationPublisher;
         }
 
         [HttpGet]
@@ -203,5 +209,24 @@ namespace FIEP_API.Controllers
             });
         }
 
+        [HttpPut("{eventID}/notification")]
+        public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateNotificationRequest request)
+        {
+            DataTier.Models.Notification notification = new DataTier.Models.Notification()
+            {
+                NotificationID = new Guid(),
+                Body = request.Body,
+                Title = request.Title,
+                ImageUrl = request.ImageUrl,
+                EventId = eventID
+            };
+            _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
+
+            _unitOfWork.Commit();
+            //add to redis
+            _notificationPublisher.Publish(notification.NotificationID.ToString());
+
+            return Ok();
+        }
     }
 }
