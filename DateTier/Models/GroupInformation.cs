@@ -9,6 +9,7 @@ namespace DataTier.Models
         {
             Event = new HashSet<Event>();
             GroupSubscription = new HashSet<GroupSubscription>();
+            Notification = new HashSet<Notification>();
         }
 
         public int GroupId { get; set; }
@@ -21,5 +22,6 @@ namespace DataTier.Models
         public virtual UserInformation GroupManager { get; set; }
         public virtual ICollection<Event> Event { get; set; }
         public virtual ICollection<GroupSubscription> GroupSubscription { get; set; }
+        public virtual ICollection<Notification> Notification { get; set; }
     }
 }

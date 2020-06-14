@@ -27,6 +27,7 @@ namespace DataTier.Models
         public virtual DbSet<UserInformation> UserInformation { get; set; }
 
         public virtual DbSet<UserFCMToken> UserFCMToken { get; set; }
+        public virtual DbSet<Notification> Notification { get; set; }
 
         //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //        {
@@ -300,13 +301,67 @@ namespace DataTier.Models
                 entity.HasKey(e => e.UserFCMId);
 
                 entity.Property(e => e.FCMToken).IsRequired()
-                    .HasMaxLength(2000)
+                    .HasMaxLength(256)
                     .IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.FCMToken)
                     .HasForeignKey(d => d.UserID)
                     .OnDelete(DeleteBehavior.ClientSetNull);
+
+            });
+
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasKey(e => e.NotificationID);
+
+                entity.Property(e => e.NotificationID).IsRequired()
+                    .HasMaxLength(2000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Title)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Body)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ImageUrl)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+
+                entity.Property(e => e.UserFCMTokens)
+                    .HasColumnType("VARCHAR(MAX)")
+                    .HasDefaultValue(null)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EventId)
+                .HasColumnName("EventId")
+                .HasDefaultValue(null);
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.Notification)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.Property(e => e.GroupId)
+                .HasColumnName("GroupId")
+                .HasDefaultValue(null); ;
+
+                entity.HasOne(d => d.GroupInformation)
+                    .WithMany(p => p.Notification)
+                    .HasForeignKey(d => d.GroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ModifyDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
 
             });
 
