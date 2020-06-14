@@ -8,6 +8,7 @@ services:
       dockerfile: FIEP_API/Dockerfile
     depends_on:
       - mssql
+      - redis
   mssql:
     container_name: mssql
     #image: "microsoft/mssql-server-linux:latest"
@@ -22,3 +23,15 @@ services:
       - "8089:1433"
     volumes:
      - /MSSQL/data:/var/opt/mssql - /var/opt/mssql/data
+
+  redis:
+    container_name: redis
+    image: "redis:alpine"
+    command: redis-server --requirepass feip_str0ngpwd
+    ports:
+     - "6379:6379"
+    volumes:
+     - /Redis/redis-data:/var/lib/redis
+     - /Redis/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+     - REDIS_REPLICATION_MODE=master
