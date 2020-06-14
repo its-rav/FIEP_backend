@@ -43,8 +43,7 @@ namespace FIEP_API.Controllers
             }
             if(request.IsUpComming)
             {
-                listEventAfterFilter = listEventAfterFilter.Where(x => ((DateTime)x.TimeOccur - DateTime.Now).TotalDays < 2 
-                                                                    && ((DateTime)x.TimeOccur - DateTime.Now).TotalDays > 0);
+                listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now);
             }
             //apply paging
             var listEventsAfterPaging = listEventAfterFilter
