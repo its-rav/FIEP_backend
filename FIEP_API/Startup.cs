@@ -19,6 +19,7 @@ using BusinessTier.Extensions;
 using Microsoft.OpenApi.Models;
 using System.IO;
 using Newtonsoft.Json;
+using BusinessTier.DistributedCache;
 using BusinessTier.ServiceWorkers;
 
 namespace FIEP_API
@@ -38,7 +39,6 @@ namespace FIEP_API
         {
             //sql connection
             services.AddMonitoringServicesDBConfiguration(Configuration);
-
             services.AddDistributedRedisCache(option =>
             {
                 option.Configuration = Configuration.GetConnectionString("RedisCacheConnection");
@@ -49,7 +49,6 @@ namespace FIEP_API
             services.AddControllers().AddNewtonsoftJson(options => {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
-
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_INSTRUMENTATIONKEY"]);
             
             // services.AddApplicationInsightsTelemetry();
@@ -75,6 +74,7 @@ namespace FIEP_API
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.UseCaching<ApplyCache>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
