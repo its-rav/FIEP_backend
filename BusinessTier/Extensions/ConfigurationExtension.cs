@@ -1,4 +1,6 @@
 ﻿
+using Autofac;
+using BusinessTier.DistributedCache;
 using DataTier.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,11 @@ namespace BusinessTier.Extensions
                 options.UseLazyLoadingProxies();
             });
             return serviceCollection;
+        }
+        public static void UseCaching<T>(this ContainerBuilder builder)
+            where T : ICacheStore
+        {
+            builder.RegisterType<T>().AsSelf().As<ICacheStore>();
         }
     }
 }

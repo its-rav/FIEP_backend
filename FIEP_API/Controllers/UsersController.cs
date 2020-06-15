@@ -26,9 +26,9 @@ namespace FIEP_API.Controllers
         public ActionResult GetUsers([FromQuery] GetUsersRequest request)
         {        
             var listUsersAfterFilter = _unitOfWork.Repository<UserInformation>().GetAll().Where(x => x.IsDeleted == false);
-            if (request.SearchParam.Length > 0)
+            if (request.Query.Length > 0)
             {
-                listUsersAfterFilter = listUsersAfterFilter.Where(x => x.Fullname.Contains(request.SearchParam));
+                listUsersAfterFilter = listUsersAfterFilter.Where(x => x.Fullname.Contains(request.Query));
             }
 
             //apply paging

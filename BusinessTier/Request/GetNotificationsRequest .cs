@@ -5,11 +5,11 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class GetUsersRequest
+    public class GetNotificationsRequest
     {
 		//Search param
 		public string Query { get; set; } = "";
-		//Paging param
+		
 		const int maxPageSize = 10;
 
 		private int _pageSize = 5;
@@ -25,8 +25,8 @@ namespace BusinessTier.Request
 			}
 		}
 		public int PageNumber { get; set; } = 1;
-		//sort param
-		public UserInformationFields Field { get; set; } = 0;
-		public Boolean isDesc { get; set; } = true;
+		
+
+
 	}
 }

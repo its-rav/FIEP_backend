@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "appInsights1": {
-      "type": "appInsights.sdk",
-      "connectionId": null
-    },
     "secrets1": {
       "type": "secrets.user"
     },

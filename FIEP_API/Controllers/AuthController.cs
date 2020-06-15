@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessTier.Request;
 using DataTier.Models;
 using DataTier.Repository;
 using DataTier.UOW;
@@ -22,11 +23,10 @@ namespace FIEP_API.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpPost("login")]
-        public async Task<ActionResult> VerifyGoogleLogin([FromBody]Object request)
+        public async Task<ActionResult> VerifyGoogleLogin([FromBody]AuthRequest request)
         {
-            var valuesOfRequest = JsonConvert.DeserializeObject<Dictionary<string, string>>(request.ToString());
-            string idToken;
-            valuesOfRequest.TryGetValue("idToken", out idToken);
+            string idToken = request.idToken;
+            string fcmToken = request.fcmToken;
 
             var auth = FirebaseAdmin.Auth.FirebaseAuth.DefaultInstance;
             FirebaseToken decodedToken = await auth.VerifyIdTokenAsync(idToken);
@@ -41,6 +41,8 @@ namespace FIEP_API.Controllers
             string userFullName = displayName.Substring(0, displayName.IndexOf("(") - 1);
 
             var existingStudent = _unitOfWork.Repository<UserInformation>().FindFirstByProperty(x => x.Email.Equals(email));
+            var existingFCMToken = _unitOfWork.Repository<UserFCMToken>().FindFirstByProperty(x => x.FCMToken.Equals(fcmToken));
+
             if (existingStudent == null)
             {
                 UserInformation newUser = new UserInformation()
@@ -53,9 +55,40 @@ namespace FIEP_API.Controllers
                     CreateDate = DateTime.Now
                 };
                 _unitOfWork.Repository<UserInformation>().Insert(newUser);
-                _unitOfWork.Commit();
-            }
 
+                if(existingFCMToken == null)
+                {
+                    UserFCMToken userFCMToken = new UserFCMToken()
+                    {
+                        FCMToken = fcmToken,
+                        UserID = newUser.UserId,
+                    };
+                    _unitOfWork.Repository<UserFCMToken>().Insert(userFCMToken);
+                }
+                else
+                {
+                    existingFCMToken.UserID = newUser.UserId;
+                    _unitOfWork.Repository<UserFCMToken>().Update(existingFCMToken);
+                }
+            }
+            else
+            {
+                if (existingFCMToken == null)
+                {
+                    UserFCMToken userFCMToken = new UserFCMToken()
+                    {
+                        FCMToken = fcmToken,
+                        UserID = existingStudent.UserId,
+                    };
+                    _unitOfWork.Repository<UserFCMToken>().Insert(userFCMToken);
+                }
+                else
+                {
+                    existingFCMToken.UserID = existingStudent.UserId;
+                    _unitOfWork.Repository<UserFCMToken>().Update(existingFCMToken);
+                }
+            }
+            _unitOfWork.Commit();
             string customToken = await FirebaseAuth.DefaultInstance.CreateCustomTokenAsync(decodedToken.Uid);
             return Ok(customToken);
         }

@@ -23,9 +23,9 @@ namespace FIEP_API.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetPostsOfEvent([FromQuery]GetPostsRequest request)
+        public ActionResult GetPosts([FromQuery]GetPostsRequest request)
         {
-            var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.EventId == request.EventId && x.IsDeleted == false);
+            var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
             //apply paging
             var listPostsAfterPaging = listPostsAfterSearch
                .Skip((request.PageNumber - 1) * request.PageSize)
@@ -48,26 +48,53 @@ namespace FIEP_API.Controllers
                     break;
             }
 
-            var listOfPosts = new List<PostDTO>();
+            var listOfPosts = new List<dynamic>();
             foreach (var item in listPostsAfterSort)
             {
-                PostDTO postDTO = new PostDTO()
+                switch (request.FieldSize)
                 {
-                    PostId = item.PostId,
-                    PostContent = item.PostContent,
-                    ImageUrl = item.ImageUrl
-                };
-                listOfPosts.Add(postDTO);
+                    case "short":
+                        var postObj = new
+                        {
+                            postID = item.PostId,
+                            postContent = item.PostContent
+                        };
+
+                        listOfPosts.Add(postObj);
+                        break;
+                    case "medium":
+                        var postObjm = new
+                        {
+                            postID = item.PostId,
+                            postContent = item.PostContent,
+                            imageUrl = item.ImageUrl,
+                            createDate = item.CreateDate
+                        };
+                        listOfPosts.Add(postObjm);
+                        break;
+                    default:
+                        var postObjl = new
+                        {
+                            postID = item.PostId,
+                            postContent = item.PostContent,
+                            imageUrl = item.ImageUrl,
+                            createDate = item.CreateDate,
+                            eventId = item.EventId
+                        };
+
+                        listOfPosts.Add(postObjl);
+                        break;
+                }
             }
             return Ok(new
             {
                 data = listOfPosts,
-                totalPages = (listPostsAfterSearch.ToList().Count / request.PageSize)
+                totalPages = Math.Ceiling((double)listPostsAfterSearch.ToList().Count / request.PageSize)
             });
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetEvent(Guid id)
+        public ActionResult GetPostById(Guid id)
         {
             var result = _unitOfWork.Repository<Post>().FindFirstByProperty(x => x.PostId.Equals(id) && x.IsDeleted == false);
             PostDTO postDTO = new PostDTO()
@@ -77,6 +104,78 @@ namespace FIEP_API.Controllers
                 ImageUrl = result.ImageUrl
             };
             return Ok(postDTO);
+        }
+
+
+        [HttpGet("{PostId}/comments")]
+        public ActionResult GetCommentsOfPost(Guid PostId,[FromQuery]GetCommentsRequest request)
+        {
+            var listCommentsAfterSearch = _unitOfWork.Repository<Comment>().FindAllByProperty(x => x.PostId.Equals(PostId) && x.IsDeleted == false);
+            //apply paging
+            var listCommentsAfterPaging = listCommentsAfterSearch
+               .Skip((request.PageNumber - 1) * request.PageSize)
+               .Take(request.PageSize)
+               .ToList();
+
+            //apply sort
+            var listCommentsAfterSort = new List<Comment>();
+            switch (request.Field)
+            {
+                case CommentFields.CreateDate: //sort by time occur
+                    if (request.isDesc)
+                    {
+                        listCommentsAfterSort = listCommentsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
+                    }
+                    else
+                    {
+                        listCommentsAfterSort = listCommentsAfterPaging.OrderBy(x => x.CreateDate).ToList();
+                    }
+                    break;
+            }
+
+            var listOfComments = new List<dynamic>();
+            foreach (var item in listCommentsAfterSort)
+            {
+                switch (request.FieldSize)
+                {
+                    case "short":
+                        var commentObj = new
+                        {
+                            commentId = item.CommentId,
+                            commentContent = item.Content
+                        };
+
+                        listOfComments.Add(commentObj);
+                        break;
+                    case "medium":
+                        var commentObjm = new
+                        {
+                            commentId = item.CommentId,
+                            commentContent = item.Content,
+                            postId = item.PostId,
+                            userId = item.CommentOwnerId
+                        };
+                        listOfComments.Add(commentObjm);
+                        break;
+                    default:
+                        var commentObjl = new
+                        {
+                            commentId = item.CommentId,
+                            commentContent = item.Content,
+                            postId = item.PostId,
+                            userId = item.CommentOwnerId,
+                            createDate = item.CreateDate
+                        };
+
+                        listOfComments.Add(commentObjl);
+                        break;
+                }
+            }
+            return Ok(new
+            {
+                data = listOfComments,
+                totalPages = Math.Ceiling((double)listCommentsAfterSearch.ToList().Count / request.PageSize)
+            });
         }
     }
 }

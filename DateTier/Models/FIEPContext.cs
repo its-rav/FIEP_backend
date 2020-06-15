@@ -26,14 +26,17 @@ namespace DataTier.Models
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-//                optionsBuilder.UseSqlServer("Server=SE130462;Database=FIEP;Trusted_Connection=True;User Id=sa;Password=26651199;MultipleActiveResultSets=true");
-//            }
-//        }
+        public virtual DbSet<UserFCMToken> UserFCMToken { get; set; }
+        public virtual DbSet<Notification> Notification { get; set; }
+
+        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //        {
+        //            if (!optionsBuilder.IsConfigured)
+        //            {
+        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+        //                optionsBuilder.UseSqlServer("Server=SE130462;Database=FIEP;Trusted_Connection=True;User Id=sa;Password=26651199;MultipleActiveResultSets=true");
+        //            }
+        //        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -291,6 +294,75 @@ namespace DataTier.Models
                     .IsRequired()
                     .HasMaxLength(128)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<UserFCMToken>(entity =>
+            {
+                entity.HasKey(e => e.UserFCMId);
+
+                entity.Property(e => e.FCMToken).IsRequired()
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.FCMToken)
+                    .HasForeignKey(d => d.UserID)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+            });
+
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.HasKey(e => e.NotificationID);
+
+                entity.Property(e => e.NotificationID).IsRequired()
+                    .HasMaxLength(2000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Title)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Body)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ImageUrl)
+                    .HasMaxLength(256)
+                    .IsUnicode(false);
+
+
+                entity.Property(e => e.UserFCMTokens)
+                    .HasColumnType("VARCHAR(MAX)")
+                    .HasDefaultValue(null)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EventId)
+                .HasColumnName("EventId")
+                .HasDefaultValue(null);
+
+                entity.HasOne(d => d.Event)
+                    .WithMany(p => p.Notification)
+                    .HasForeignKey(d => d.EventId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.Property(e => e.GroupId)
+                .HasColumnName("GroupId")
+                .HasDefaultValue(null); ;
+
+                entity.HasOne(d => d.GroupInformation)
+                    .WithMany(p => p.Notification)
+                    .HasForeignKey(d => d.GroupId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.Property(e => e.CreateDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.ModifyDate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
             });
 
             modelBuilder.Entity<UserInformation>(entity =>

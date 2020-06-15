@@ -4,6 +4,8 @@ GO
 USE FIEP;
 GO
 
+
+
 CREATE TABLE Role (
 	RoleID INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
 	Rolename VARCHAR(128) NOT NULL,
@@ -21,6 +23,12 @@ CREATE TABLE UserInformation (
 	FOREIGN KEY (RoleID) REFERENCES Role(RoleID),
 );
 
+CREATE table UserFCMToken(
+	UserFCMId int IDENTITY(1, 1) primary key,	
+	FCMToken VARCHAR(256) unique,
+	UserID UNIQUEIDENTIFIER NOT NULL,
+	FOREIGN KEY (UserID) REFERENCES UserInformation(UserID),
+);
 
 CREATE TABLE GroupInformation (
 	GroupID INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
@@ -64,6 +72,20 @@ CREATE TABLE Event (
 	TimeOccur DATETIME,
 	IsExpired BIT DEFAULT 0 NOT NULL,
 	CreateDate DATETIME DEFAULT GETDATE() ,
+	ModifyDate DATETIME DEFAULT GETDATE()
+);
+
+CREATE table Notification(
+	NotificationID UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
+	Title NVARCHAR(256),
+	Body NVARCHAR(256),
+	ImageUrl NVARCHAR(256),
+	UserFCMTokens VARCHAR(MAX) DEFAULT NULL,
+	EventID INT ,
+	FOREIGN KEY (EventID) REFERENCES Event(EventID),
+	GroupID INT ,
+	FOREIGN KEY (GroupId) REFERENCES GroupInformation(GroupID),
+	CreateDate DATETIME DEFAULT GETDATE(),
 	ModifyDate DATETIME DEFAULT GETDATE()
 );
 
@@ -123,7 +145,7 @@ INSERT INTO Role(Rolename) VALUES ('groupmanager');
 
 --UserInformation--
 INSERT INTO UserInformation(UserID,RoleID,Email,Fullname,AvatarUrl)
-VALUES('1d8c8527-e1f4-4a77-85ee-68c15f927817',1,'vothanhnhan@fpt.edu.vn','Vo Thanh Nhan','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/usericon.png?alt=media&token=4526116b-dc87-4d06-ae47-1d4fb730474c');
+VALUES('1d8c8527-e1f4-4a77-85ee-68c15f927817',1,'nhanvtse130478@fpt.edu.vn','Vo Thanh Nhan','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/usericon.png?alt=media&token=4526116b-dc87-4d06-ae47-1d4fb730474c');
 INSERT INTO UserInformation(UserID,RoleID,Email,Fullname,AvatarUrl)
 VALUES('dc70a164-619f-4502-887e-2a04465f288f',2,'tuannase130462@fpt.edu.vn','Nguyen Anh Tuan','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/usericon.png?alt=media&token=4526116b-dc87-4d06-ae47-1d4fb730474c');
 INSERT INTO UserInformation(UserID,RoleID,Email,Fullname,AvatarUrl)
@@ -150,8 +172,6 @@ VALUES('daf78774-feb8-46ab-b8ab-de1439559ed8','Fpt Vovinam Club','https://fireba
 --GroupSubscription--
 INSERT INTO GroupSubscription(GroupID,UserID)
 VALUES(1,'1d8c8527-e1f4-4a77-85ee-68c15f927817');
-INSERT INTO GroupSubscription(GroupID,UserID)
-VALUES(2,'dc70a164-619f-4502-887e-2a04465f288f');
 INSERT INTO GroupSubscription(GroupID,UserID)
 VALUES(2,'f90e94fa-6b29-4a5a-993c-94b153ef81b2');
 INSERT INTO GroupSubscription(GroupID,UserID)
@@ -186,13 +206,16 @@ VALUES(6,'Martial art for women day','FPT Greenwich', '06-06-2020','https://fire
 --EventActivity--
 INSERT INTO EventActivity(EventID,ActivityTypeId,EventActivityDescription)
 VALUES(1,1,'Great show about music');
-INSERT INTO EventActivity(ActivityID,ActivityTypeId,EventActivityDescription)
+INSERT INTO EventActivity(EventID,ActivityTypeId,EventActivityDescription)
 VALUES(1,2,'Teambuilding with newcomers');
-INSERT INTO EventActivity(ActivityID,ActivityTypeId,EventActivityDescription)
+INSERT INTO EventActivity(EventID,ActivityTypeId,EventActivityDescription)
 VALUES(2,2,'Get along with newcomers');
-INSERT INTO EventActivity(ActivityID,ActivityTypeId,EventActivityDescription)
+INSERT INTO EventActivity(EventID,ActivityTypeId,EventActivityDescription)
 VALUES(3,4,'Try be the best of yourself');
 	
+--User FCM Tokens
+INSERT INTO UserFCMToken(UserID,FCMToken)
+VALUES('1d8c8527-e1f4-4a77-85ee-68c15f927817','frXcARq8TOCr5C7b3L0XcZ:APA91bHc2CB8zWiZOjmqV0QJPF6yj5ql3vLOlLODdzal7goM-L4qOXVFjmQ2DX59Z4Q8rguU8vAP7N74XiH2LSLvoyEPtiRtFZtBZWbVuSPukGCTjYpsk8G6JV9RNnJE4gl3qy4UCmF5');
 
 --EventSubscription--
 INSERT INTO EventSubscription(EventID,UserID)

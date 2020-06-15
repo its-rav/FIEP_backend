@@ -11,6 +11,12 @@
       "type": "mssql.azure",
       "connectionId": "DatabaseConnectionString",
       "secretStore": "AzureAppSettings"
+    },
+    "redis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroup1')]/providers/Microsoft.Cache/Redis/FIEPAPIcache",
+      "type": "redis.azure",
+      "connectionId": "CacheConnection",
+      "secretStore": "AzureAppSettings"
     }
   }
 }
