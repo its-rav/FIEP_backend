@@ -21,6 +21,7 @@ using System.IO;
 using Newtonsoft.Json;
 using BusinessTier.DistributedCache;
 using BusinessTier.ServiceWorkers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FIEP_API
 {
