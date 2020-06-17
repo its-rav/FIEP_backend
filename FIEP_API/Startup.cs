@@ -21,7 +21,7 @@ using System.IO;
 using Newtonsoft.Json;
 using BusinessTier.DistributedCache;
 using BusinessTier.ServiceWorkers;
-using Microsoft.Extensions.DependencyInjection;
+using FIEP_API.Middlewares;
 
 namespace FIEP_API
 {
@@ -90,6 +90,9 @@ namespace FIEP_API
                 //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string
                 c.RoutePrefix = string.Empty;
             });
+
+            //middleware
+            app.UseAuthorizationMiddleware();
 
             var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "firebase-fiep-private-key.json");
             FirebaseApp.Create(new AppOptions
