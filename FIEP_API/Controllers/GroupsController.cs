@@ -32,87 +32,25 @@ namespace FIEP_API.Controllers
             _mediator = mediator;
         }
         [HttpGet]
-        public ActionResult GetGroups([FromQuery]GetGroupsRequest request)
+        public async Task<ActionResult> GetGroups([FromQuery]GetGroupsRequest request)
         {
-            var listGroupAfterFilter = _unitOfWork.Repository<GroupInformation>().GetAll().Where(x => x.IsDeleted == false);
-            if (request.Query.Length > 0)
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                listGroupAfterFilter = listGroupAfterFilter.Where(x => x.GroupName.Contains(request.Query));
+                return BadRequest();
             }
-            //apply paging
-            var listGroupsAfterPaging = listGroupAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-            //apply sort
-            var listGroupsAfterSort = new List<GroupInformation>();
-            switch (request.Field)
-            {
-                case GroupFields.Follower: //sort by number of follower
-                    if (request.isDesc)
-                    {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderByDescending(x => x.GroupSubscription.Count).ToList();
-                    }
-                    else
-                    {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderBy(x => x.GroupSubscription.Count).ToList();
-                    }
-                    break;
-            }
-
-            var listOfGroups = new List<dynamic>();
-            foreach (var item in listGroupsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var groupObj = new
-                        {
-                            groupID = item.GroupId,
-                            groupName = item.GroupName
-                        };
-
-                        listOfGroups.Add(groupObj);
-                        break;
-                    case "medium":
-                        var groupObjm = new
-                        {
-                            groupID = item.GroupId,
-                            groupName = item.GroupName,
-                            imageUrl = item.GroupImageUrl,
-                        };
-                        listOfGroups.Add(groupObjm);
-                        break;
-                    default:
-                        var groupObjl = new
-                        {
-                            groupID = item.GroupId,
-                            groupName = item.GroupName,
-                            imageUrl = item.GroupImageUrl,
-                            manager = item.GroupManagerId,
-                        };
-                        listOfGroups.Add(groupObjl);
-                        break;
-                }
-            }
-            return Ok(new
-            {
-                data = listOfGroups,
-                totalPages = Math.Ceiling((double)listGroupAfterFilter.ToList().Count / request.PageSize)
-            });
+            return Ok(result.Response);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult GetGroupById(int id)
+        [HttpGet("{GroupId}")]
+        public async Task<ActionResult> GetGroupById([FromRoute]GetGroupByIdRequest request)
         {
-            var group = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == id && x.IsDeleted == false);
-            var groupDTO = new GroupDTO()
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                GroupName = group.GroupName,
-                GroupImageUrl = group.GroupImageUrl,
-                GroupFollower = group.GroupSubscription.Count
-            };
-            return Ok(groupDTO);
+                return BadRequest();
+            }
+            return Ok(result.Response);
         }
 
         [HttpGet("{groupId:int}/events")]
