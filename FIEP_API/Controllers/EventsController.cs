@@ -6,9 +6,11 @@ using BusinessTier.DistributedCache;
 using BusinessTier.DTO;
 using BusinessTier.Fields;
 using BusinessTier.Request;
+using BusinessTier.Response;
 using BusinessTier.ServiceWorkers;
 using DataTier.Models;
 using DataTier.UOW;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,122 +21,37 @@ namespace FIEP_API.Controllers
     public class EventsController : ControllerBase
     {
         private readonly ICacheStore _cacheStore;
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private NotificationPublisher _notificationPublisher;
-        public EventsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher)
+        private readonly IMediator _mediator;
+        public EventsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
             _cacheStore = cacheStore;
             _notificationPublisher = notificationPublisher;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public ActionResult GetEvents([FromQuery]GetEventsRequest request)
-        {           
-            var listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
-            if (request.Query.Length > 0)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query));
-            }
-            //apply filter
-            if (request.ApproveState != 2)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState);
-            }
-            if(request.IsUpComming)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now);
-            }
-            //apply paging
-            var listEventsAfterPaging = listEventAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-            //apply sort
-            var listEventsAfterSort = new List<Event>();
-            switch (request.Field)
-            {
-                case EventFields.TimeOccur: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.TimeOccur).ToList();
-                    }
-                    else
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.TimeOccur).ToList();
-                    }
-                    break;
-                case EventFields.Follower: //sort by number of follower
-                    if (request.isDesc)
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Count).ToList();
-                    }
-                    else
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Count).ToList();
-                    }
-                    break;
-            }
-
-            var listOfEvents = new List<dynamic>();
-            foreach (var item in listEventsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var eventObj = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName
-                        };
-
-                        listOfEvents.Add(eventObj);
-                        break;
-                    case "medium":
-                        var eventObjm = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
-                            timeOccur = item.TimeOccur,
-                            location = item.Location
-                        };
-                        listOfEvents.Add(eventObjm);
-                        break;
-                    default:
-                        var eventObjl = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
-                            timeOccur = item.TimeOccur,
-                            location = item.Location,
-                            groupID = item.GroupId,
-                            createDate = item.CreateDate,
-                            approveState = item.ApprovalState
-                        };
-
-                        listOfEvents.Add(eventObjl);
-                        break;
-                }
-            }
-            return Ok(new {
-                data = listOfEvents,
-                totalPages = Math.Ceiling((double)listEventAfterFilter.ToList().Count/request.PageSize)
-            });
-        }
-        [HttpGet("{id}")]
-        public ActionResult GetEvent(int id)
+        public async Task<ActionResult> GetEvents([FromQuery]GetEventsRequest request)
         {
-            var result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == id && x.IsDeleted == false);
-            EventDTO eventDTO = new EventDTO()
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                EventId = result.EventId,
-                EventName = result.EventName,
-                EventImageUrl = result.ImageUrl,
-                TimeOccur = (DateTime)result.TimeOccur
-            };
-            return Ok(eventDTO);
+                return BadRequest();
+            }
+            return Ok(result.Response);
+        }
+
+        [HttpGet("{EventId}")]
+        public async Task<ActionResult> GetEvent([FromRoute] GetEventByIdRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if(result.Response == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result.Response);
         }
 
         [HttpGet("{eventID}/posts")]
@@ -226,6 +143,19 @@ namespace FIEP_API.Controllers
             _notificationPublisher.Publish(notification.NotificationID.ToString());
 
             return Ok();
+        }
+        [HttpPost]
+        public ActionResult CreateEvent([FromQuery] EventDTO dto)
+        {
+            var model = new Event()
+            {
+                EventId = dto.EventId,
+                EventName = dto.EventName,
+                GroupId = 3,
+            };
+            _unitOfWork.Repository<Event>().Update(model);
+            _unitOfWork.Commit();
+            return Ok("testing");
         }
     }
 }
