@@ -10,6 +10,7 @@ using BusinessTier.ServiceWorkers;
 using DataTier.Models;
 using DataTier.UOW;
 using FirebaseAdmin.Messaging;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,11 +23,13 @@ namespace FIEP_API.Controllers
         private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
         private NotificationPublisher _notificationPublisher;
-        public GroupsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher)
+        private readonly IMediator _mediator;
+        public GroupsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
             _cacheStore = cacheStore;
             _notificationPublisher = notificationPublisher;
+            _mediator = mediator;
         }
         [HttpGet]
         public ActionResult GetGroups([FromQuery]GetGroupsRequest request)
@@ -112,101 +115,16 @@ namespace FIEP_API.Controllers
             return Ok(groupDTO);
         }
 
-        [HttpGet("{groupId}/events")]
-        public ActionResult GetEventsOfGroup([FromRoute]int groupId,[FromQuery] GetEventsRequest request)
+        [HttpGet("{groupId:int}/events")]
+        public async Task<ActionResult> GetEventsOfGroup([FromRoute]int groupId,[FromQuery] GetEventsRequest request)
         {
-            var listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.GroupId == groupId && x.IsDeleted == false);
-            if (request.Query.Length > 0)
+            request.GroupId = groupId;
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query));
+                return BadRequest();
             }
-            //apply filter
-            if (request.ApproveState != 2)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState);
-            }
-            if (request.IsUpComming)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now);
-            }
-            //apply paging
-            var listEventsAfterPaging = listEventAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-            //apply sort
-            var listEventsAfterSort = new List<Event>();
-            switch (request.Field)
-            {
-                case EventFields.TimeOccur: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.TimeOccur).ToList();
-                    }
-                    else
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.TimeOccur).ToList();
-                    }
-                    break;
-                case EventFields.Follower: //sort by number of follower
-                    if (request.isDesc)
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Count).ToList();
-                    }
-                    else
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Count).ToList();
-                    }
-                    break;
-            }
-
-            var listOfEvents = new List<dynamic>();
-            foreach (var item in listEventsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var eventObj = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName
-                        };
-
-                        listOfEvents.Add(eventObj);
-                        break;
-                    case "medium":
-                        var eventObjm = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
-                            timeOccur = item.TimeOccur,
-                            location = item.Location
-                        };
-                        listOfEvents.Add(eventObjm);
-                        break;
-                    default:
-                        var eventObjl = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
-                            timeOccur = item.TimeOccur,
-                            location = item.Location,
-                            groupID = item.GroupId,
-                            createDate = item.CreateDate,
-                            approveState = item.ApprovalState
-                        };
-
-                        listOfEvents.Add(eventObjl);
-                        break;
-                }
-            }
-            return Ok(new
-            {
-                data = listOfEvents,
-                totalPages = Math.Ceiling((double)listEventAfterFilter.ToList().Count / request.PageSize)
-            });
+            return Ok(result.Response);
         }
 
         [HttpPut("{groupId}/notification")]

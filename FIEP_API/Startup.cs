@@ -68,7 +68,8 @@ namespace FIEP_API
                         builder.AllowAnyOrigin();
                     });
             });
-
+            //regist handlers
+            services.RegisterHandlers();
 
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,7 +93,7 @@ namespace FIEP_API
             });
 
             //middleware
-            app.UseAuthorizationMiddleware();
+            //app.UseAuthorizationMiddleware();
 
             var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "firebase-fiep-private-key.json");
             FirebaseApp.Create(new AppOptions

@@ -1,12 +1,15 @@
 ﻿using BusinessTier.Fields;
+using BusinessTier.Response;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class GetEventsRequest
+    public class GetEventsRequest : IRequest<ResponseBase>
     {
+		public int? GroupId { get; set; } = null;
 		//Search param
 		public string Query { get; set; } = "";
 		//Filter param
