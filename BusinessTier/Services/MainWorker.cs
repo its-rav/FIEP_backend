@@ -15,14 +15,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Collections;
 using Microsoft.EntityFrameworkCore.Internal;
 
-namespace BusinessTier.ServiceWorker
+namespace BusinessTier.Services
 {
-    public class NotificationWorker : BackgroundService
+    public class MainWorker : BackgroundService
     {
-        private readonly ILogger<NotificationWorker> _logger;
+        private readonly ILogger<MainWorker> _logger;
 
 
-        public NotificationWorker(ILogger<NotificationWorker> logger, Microsoft.Extensions.Configuration.IConfiguration configuration,IUnitOfWork unitOfWork)
+        public MainWorker(ILogger<MainWorker> logger, Microsoft.Extensions.Configuration.IConfiguration configuration,IUnitOfWork unitOfWork)
         {
             _logger = logger;
             string connectionString = configuration.GetConnectionString("RedisCacheConnection");

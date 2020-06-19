@@ -7,7 +7,7 @@ using BusinessTier.DTO;
 using BusinessTier.Fields;
 using BusinessTier.Request;
 using BusinessTier.Response;
-using BusinessTier.ServiceWorkers;
+using BusinessTier.Services;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
@@ -35,7 +35,12 @@ namespace FIEP_API.Controllers
         [HttpGet]
         public async Task<ActionResult> GetEvents([FromQuery]GetEventsRequest request)
         {
+
             var result = await _mediator.Send(request);
+
+            //please remove this in later commit
+            new GoogleSheetApiUtils(_unitOfWork).UpdateDataToSheet();
+
             if (result.Response == null)
             {
                 return BadRequest();
