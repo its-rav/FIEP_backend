@@ -7,6 +7,7 @@ using BusinessTier.Fields;
 using BusinessTier.Request;
 using DataTier.Models;
 using DataTier.UOW;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,94 +17,35 @@ namespace FIEP_API.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private IUnitOfWork _unitOfWork;
-        public PostsController(IUnitOfWork unitOfWork)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
+        public PostsController(IUnitOfWork unitOfWork, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public ActionResult GetPosts([FromQuery]GetPostsRequest request)
+        public async Task<ActionResult> GetPosts([FromQuery]GetPostsRequest request)
         {
-            var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
-            //apply paging
-            var listPostsAfterPaging = listPostsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
+            var result = await _mediator.Send(request);
 
-            //apply sort
-            var listPostsAfterSort = new List<Post>();
-            switch (request.Field)
+            if (result.Response == null)
             {
-                case PostFields.CreateDate: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
-                    }
-                    else
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderBy(x => x.CreateDate).ToList();
-                    }
-                    break;
+                return BadRequest();
             }
-
-            var listOfPosts = new List<dynamic>();
-            foreach (var item in listPostsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var postObj = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent
-                        };
-
-                        listOfPosts.Add(postObj);
-                        break;
-                    case "medium":
-                        var postObjm = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate
-                        };
-                        listOfPosts.Add(postObjm);
-                        break;
-                    default:
-                        var postObjl = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate,
-                            eventId = item.EventId
-                        };
-
-                        listOfPosts.Add(postObjl);
-                        break;
-                }
-            }
-            return Ok(new
-            {
-                data = listOfPosts,
-                totalPages = Math.Ceiling((double)listPostsAfterSearch.ToList().Count / request.PageSize)
-            });
+            return Ok(result.Response);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult GetPostById(Guid id)
+        [HttpGet("{PostId}")]
+        public async  Task<ActionResult> GetPostById([FromRoute]GetPostByIdRequest request)
         {
-            var result = _unitOfWork.Repository<Post>().FindFirstByProperty(x => x.PostId.Equals(id) && x.IsDeleted == false);
-            PostDTO postDTO = new PostDTO()
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                PostId = result.PostId,
-                PostContent = result.PostContent,
-                ImageUrl = result.ImageUrl
-            };
-            return Ok(postDTO);
+                return BadRequest();
+            }
+            return Ok(result.Response);
         }
 
 
