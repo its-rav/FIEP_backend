@@ -1,12 +1,15 @@
 ﻿using BusinessTier.Fields;
+using BusinessTier.Response;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class GetPostsRequest
+    public class GetPostsRequest : IRequest<ResponseBase>
     {
+		public int? EventId { get; set; } = null;
 		//Paging param
 		const int maxPageSize = 10;
 

@@ -60,74 +60,15 @@ namespace FIEP_API.Controllers
         }
 
         [HttpGet("{eventID}/posts")]
-        public ActionResult GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsRequest request)
+        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsRequest request)
         {
-            var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.EventId == eventID && x.IsDeleted == false);
-            //apply paging
-            var listPostsAfterPaging = listPostsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
-
-            //apply sort
-            var listPostsAfterSort = new List<Post>();
-            switch (request.Field)
+            request.EventId = eventID;
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                case PostFields.CreateDate: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
-                    }
-                    else
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderBy(x => x.CreateDate).ToList();
-                    }
-                    break;
+                return BadRequest();
             }
-
-            var listOfPosts = new List<dynamic>();
-            foreach (var item in listPostsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var postObj = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent
-                        };
-
-                        listOfPosts.Add(postObj);
-                        break;
-                    case "medium":
-                        var postObjm = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate
-                        };
-                        listOfPosts.Add(postObjm);
-                        break;
-                    default:
-                        var postObjl = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate,
-                            eventId = item.EventId
-                        };
-
-                        listOfPosts.Add(postObjl);
-                        break;
-                }
-            }
-            return Ok(new
-            {
-                data = listOfPosts,
-                totalPages = Math.Ceiling((double)listPostsAfterSearch.ToList().Count / request.PageSize)
-            });
+            return Ok(result.Response);
         }
 
         [HttpPut("{eventID}/notification")]
