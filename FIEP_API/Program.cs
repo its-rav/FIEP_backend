@@ -3,7 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using BusinessTier.ServiceWorker;
+using BusinessTier.Services;
 namespace FIEP_API
 {
     public class Program
@@ -20,7 +20,7 @@ namespace FIEP_API
                     webBuilder.UseStartup<Startup>();
                 }).ConfigureServices((hostContext, services) =>
                 {
-                    services.AddHostedService<NotificationWorker>();
+                    services.AddHostedService<MainWorker>();
 
                 }).UseServiceProviderFactory(new AutofacServiceProviderFactory());
         

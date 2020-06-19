@@ -20,7 +20,7 @@ using Microsoft.OpenApi.Models;
 using System.IO;
 using Newtonsoft.Json;
 using BusinessTier.DistributedCache;
-using BusinessTier.ServiceWorkers;
+using BusinessTier.Services;
 using FIEP_API.Middlewares;
 
 namespace FIEP_API
