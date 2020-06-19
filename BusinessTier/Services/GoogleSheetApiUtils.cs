@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace BusinessTier.Services
 {
@@ -18,9 +19,10 @@ namespace BusinessTier.Services
         static string ApplicationName = "FIEP Data";
         static readonly string eventSheet = "Event Data";
         static readonly string groupSheet = "Group Data";
-        static readonly int startRow = 3;
+        static readonly int startRow = 2;
         private SheetsService service;
 
+        const String spreadsheetId = "1P5ozlmnkCQhenLCuKEWfTnzv3ijp8S6WnUdA-OqVnnM";
         private readonly IUnitOfWork _unitOfWork;
         public  GoogleSheetApiUtils(IUnitOfWork unitOfWork)
         {
@@ -50,9 +52,17 @@ namespace BusinessTier.Services
                 
             });
         }
-        public void UpdateDataToSheet()
+        public async void UpdateDataToSheet()
         {
-            String spreadsheetId = "1P5ozlmnkCQhenLCuKEWfTnzv3ijp8S6WnUdA-OqVnnM";
+            ClearValuesRequest clearValuesRequest = new ClearValuesRequest() ;
+            SpreadsheetsResource.ValuesResource.ClearRequest clearEventsRequest 
+                    = new SpreadsheetsResource.ValuesResource.ClearRequest(service, clearValuesRequest, spreadsheetId,$"{eventSheet}");
+            clearEventsRequest.Execute();
+
+            SpreadsheetsResource.ValuesResource.ClearRequest clearGroupRequest
+                    = new SpreadsheetsResource.ValuesResource.ClearRequest(service, clearValuesRequest, spreadsheetId, $"{groupSheet}");
+            clearGroupRequest.Execute();
+
 
             // The new values to apply to the spreadsheet.
             List<ValueRange> listValueRanges = this.GetListValueRanges();
@@ -60,7 +70,7 @@ namespace BusinessTier.Services
             // TODO: Assign values to desired properties of `requestBody`:
             BatchUpdateValuesRequest requestBody = new BatchUpdateValuesRequest() {
                 ValueInputOption = "USER_ENTERED",
-                Data = listValueRanges
+                Data = listValueRanges,
             };
 
             SpreadsheetsResource.ValuesResource.BatchUpdateRequest request = service.Spreadsheets.Values.BatchUpdate(requestBody, spreadsheetId);
@@ -69,57 +79,104 @@ namespace BusinessTier.Services
             BatchUpdateValuesResponse response = request.Execute();
             // Data.BatchUpdateValuesResponse response = await request.ExecuteAsync();
         }
+        private List<ValueRange> EventsToValueRanges(List<EventStatisticDTO> list)
+        {
+            List<ValueRange> result = new List<ValueRange>();
 
+            List<object> eventHeaders = this.getHeaders(EventStatisticDTO.GetAllProperties());
+            result.Add(new ValueRange()
+            {
+                Range = $"{eventSheet}!A1:{(char)(64 + eventHeaders.Count())}",
+                Values = new List<IList<object>>()
+                    {
+                        eventHeaders
+                    }
+            }); ;
+
+            int row = startRow - 1;
+            foreach (var dto in list)
+            {
+                row++;
+                String range = $"{eventSheet}!A{row}:{(char)(64+eventHeaders.Count())}";
+
+                List<object> values = new List<object>();
+                foreach (var header in eventHeaders)
+                {
+                    values.Add(EventStatisticDTO.GetPropValue(dto,(string) header));
+                }
+
+                result.Add(new ValueRange()
+                {
+                    Range = range,
+                    Values = new List<IList<object>>()
+                    {
+                        values
+                    }
+                });
+            }
+
+            return result;
+        }
+
+        private List<ValueRange> GroupsToValueRanges(List<GroupStatisticDTO> list)
+        {
+            List<ValueRange> result = new List<ValueRange>();
+            List<object> groupHeaders = this.getHeaders(GroupStatisticDTO.GetAllProperties());
+
+            result.Add(new ValueRange()
+            {
+                Range = $"{groupSheet}!A1:{(char)(64 + groupHeaders.Count())}",
+                Values = new List<IList<object>>()
+                    {
+                        groupHeaders
+                    }
+            });
+
+            int row = startRow - 1;
+            foreach (var dto in list)
+            {
+                row++;
+                String range = $"{groupSheet}!A{row}:{(char)(64 + groupHeaders.Count())}";
+
+                List<object> values = new List<object>();
+                foreach (var header in groupHeaders)
+                {
+                    values.Add(GroupStatisticDTO.GetPropValue(dto, (string)header));
+                }
+
+                result.Add(new ValueRange()
+                {
+                    Range = range,
+                    Values = new List<IList<object>>()
+                    {
+                        values
+                    }
+                });
+            }
+
+            return result;
+        }
         private List<ValueRange> GetListValueRanges()
         {
             List<GroupStatisticDTO> groupData = this.GetGroupsData();
             List<EventStatisticDTO> eventData = this.GetEventsData();
 
-            List<ValueRange> objs = new List<ValueRange>(); 
+            List<ValueRange> objs = new List<ValueRange>();
 
-            int row = startRow;
-            foreach (var dto in eventData)
-            {
-                String range = $"{eventSheet}!A{row}:D";
-                objs.Add(new ValueRange()
-                {
-                    Range = range,
-                    Values = new List<IList<object>>()
-                    {
-                        new List<object>()
-                        {
-                            dto.EventID,
-                            dto.EventName,
-                            dto.Followers,
-                            dto.postCount
-                        }
-                    }
-                });
-                row++;
-            }
+            objs.AddRange(this.EventsToValueRanges(eventData));
+            objs.AddRange(this.GroupsToValueRanges(groupData));
 
-            row = startRow;
-            foreach (var dto in groupData)
-            {
-                String range = $"{groupSheet}!A{row}:E";
-                objs.Add(new ValueRange()
-                {
-                    Range = range,
-                    Values = new List<IList<object>>()
-                    {
-                        new List<object>()
-                        {
-                            dto.GroupID,
-                            dto.GroupName,
-                            dto.Followers,
-                            dto.eventsCount,
-                            dto.activeEventsCount
-                        }
-                    }
-                });
-                row++;
-            }
             return objs;
+        }
+
+        private List<object> getHeaders(PropertyInfo[] properties)
+        {
+            List<object> headers = new List<object>();
+            foreach (PropertyInfo pi in properties)
+            {
+                headers.Add(pi.Name);
+            }
+            return headers;
         }
 
         private List<EventStatisticDTO> GetEventsData()
@@ -127,7 +184,7 @@ namespace BusinessTier.Services
             List<EventStatisticDTO> result = new List<EventStatisticDTO>();
 
             var listActiveEvents = _unitOfWork.Repository<Event>()
-                        .FindAllByProperty(x => (DateTime.Compare((DateTime)x.TimeOccur, DateTime.Now) > 0));
+                        .FindAllByProperty(x => x.IsDeleted == false && x.IsExpired==false);
             foreach (var activeEvent in listActiveEvents)
             {
                 int followers = _unitOfWork.Repository<EventSubscription>().FindAllByProperty(x => x.EventId == activeEvent.EventId).Count();
@@ -137,7 +194,7 @@ namespace BusinessTier.Services
                     EventID = activeEvent.EventId,
                     EventName = activeEvent.EventName,
                     Followers=followers,
-                    postCount=postCount
+                    PostCount=postCount,
                 }) ;
 
             }
@@ -163,8 +220,9 @@ namespace BusinessTier.Services
                     GroupID = group.GroupId,
                     GroupName = group.GroupName,
                     Followers = followers,
-                    eventsCount = eventsCount,
-                    activeEventsCount= activeEventsCount
+                    EventsCount = eventsCount,
+                    ActiveEventsCount= activeEventsCount,
+                    
                 });
 
             }
