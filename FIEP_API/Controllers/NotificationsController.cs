@@ -8,7 +8,10 @@ using Newtonsoft.Json;
 using BusinessTier.Request;
 using DataTier.UOW;
 using DataTier.Models;
+
 using BusinessTier.DTO;
+
+using BusinessTier.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -37,12 +40,14 @@ namespace FIEP_API.Controllers
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToList();
+
             //apply sort
             return Ok(new
             {
                 data = listNotificationssAfterPaging,
                 totalPages = Math.Ceiling((double)listNotificationssAfterPaging.ToList().Count / request.PageSize)
             });
+            
         }
 
         // GET api/<NotificationsController>/5

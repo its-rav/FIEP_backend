@@ -124,7 +124,7 @@ namespace BusinessTier.Services
 
         private List<EventStatisticDTO> GetEventsData()
         {
-            List<GroupStatisticDTO> result = new List<GroupStatisticDTO>();
+            List<EventStatisticDTO> result = new List<EventStatisticDTO>();
 
             var listActiveEvents = _unitOfWork.Repository<Event>()
                         .FindAllByProperty(x => (DateTime.Compare((DateTime)x.TimeOccur, DateTime.Now) > 0));
@@ -132,7 +132,7 @@ namespace BusinessTier.Services
             {
                 int followers = _unitOfWork.Repository<EventSubscription>().FindAllByProperty(x => x.EventId == activeEvent.EventId).Count();
                 int postCount = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.EventId == activeEvent.EventId).Count();
-                result.Add(new GroupStatisticDTO()
+                result.Add(new EventStatisticDTO()
                 {
                     EventID = activeEvent.EventId,
                     EventName = activeEvent.EventName,
@@ -161,7 +161,7 @@ namespace BusinessTier.Services
                 result.Add(new GroupStatisticDTO()
                 {
                     GroupID = group.GroupId,
-                    EventName = group.GroupName,
+                    GroupName = group.GroupName,
                     Followers = followers,
                     eventsCount = eventsCount,
                     activeEventsCount= activeEventsCount
