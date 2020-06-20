@@ -38,7 +38,6 @@ namespace BusinessTier.Handlers
                 GroupName = group.GroupName,
                 GroupImageUrl = group.GroupImageUrl,
                 GroupFollower = group.GroupSubscription.Count,
-                Manager = group.GroupManagerId,
             };
             return new ResponseBase()
             {

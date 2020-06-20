@@ -88,7 +88,6 @@ namespace BusinessTier.Handlers
                             groupName = item.GroupName,
                             groupImageUrl = item.GroupImageUrl,
                             groupFollower = item.GroupSubscription.Count,
-                            manager = item.GroupManagerId,
                         };
                         listOfGroups.Add(groupObjl);
                         break;

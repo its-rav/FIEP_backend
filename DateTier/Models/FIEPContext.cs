@@ -7,7 +7,7 @@ namespace DataTier.Models
     public partial class FIEPContext : DbContext
     {
         //public FIEPContext()
-        //{
+        //{f
         //}
 
         public FIEPContext(DbContextOptions<FIEPContext> options)
@@ -212,12 +212,6 @@ namespace DataTier.Models
                 entity.Property(e => e.ModifyDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
-
-                entity.HasOne(d => d.GroupManager)
-                    .WithMany(p => p.GroupInformation)
-                    .HasForeignKey(d => d.GroupManagerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GroupInfo__Group__403A8C7D");
             });
 
             modelBuilder.Entity<GroupSubscription>(entity =>
