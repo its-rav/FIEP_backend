@@ -68,19 +68,8 @@ namespace FIEP_API.Controllers
         [HttpPut("{groupId}/notification")]
         public async Task<ActionResult> CreatePushNotification([FromRoute] int groupId, [FromBody] CreateNotificationRequest request)
         {
-            DataTier.Models.Notification notification = new DataTier.Models.Notification()
-            {
-                NotificationID=new Guid(),
-                Body = request.Body,
-                Title = request.Title,
-                ImageUrl = request.ImageUrl,
-                GroupId= groupId
-            };
-            _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
-            _unitOfWork.Commit();
-
-            _notificationPublisher.Publish(notification.NotificationID.ToString());
-
+            request.GroupId = groupId;
+            await _mediator.Send(request);
             return Ok();
         }
     }

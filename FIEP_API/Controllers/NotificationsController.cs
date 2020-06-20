@@ -12,6 +12,7 @@ using DataTier.Models;
 using BusinessTier.DTO;
 
 using BusinessTier.Services;
+using MediatR;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,50 +23,31 @@ namespace FIEP_API.Controllers
     public class NotificationsController : ControllerBase
     {
         private IUnitOfWork _unitOfWork;
-        public NotificationsController(IUnitOfWork unitOfWork)
+        private readonly IMediator _mediator;
+        public NotificationsController(IUnitOfWork unitOfWork, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
         // GET: api/<NotificationsController>
         [HttpGet]
-        public ActionResult GetNotifications([FromQuery] GetNotificationsRequest request)
+        public async Task<ActionResult> GetNotifications([FromQuery] GetNotificationsRequest request)
         {
-            var listNotificationsAfterFilter = _unitOfWork.Repository<Notification>().GetAll();
-            if (request.Query.Length > 0)
-            {
-                listNotificationsAfterFilter = listNotificationsAfterFilter.Where(x => x.Title.Contains(request.Query));
-            }
-            //apply paging
-            var listNotificationssAfterPaging = listNotificationsAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-
-            //apply sort
-            return Ok(new
-            {
-                data = listNotificationssAfterPaging,
-                totalPages = Math.Ceiling((double)listNotificationssAfterPaging.ToList().Count / request.PageSize)
-            });
+            var result = await _mediator.Send(request);
+            return Ok(result.Response);
             
         }
 
         // GET api/<NotificationsController>/5
-        [HttpGet("{id}")]
-        public ActionResult Get(Guid id)
+        [HttpGet("{NotiID}")]
+        public async Task<ActionResult> Get([FromRoute]GetNotificationByIdRequest request)
         {
-            var result = _unitOfWork.Repository<Notification>().FindFirstByProperty(x => x.NotificationID == id);
-            NotificationDTO notificationDTO = new NotificationDTO()
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                NotificationID = result.NotificationID,
-                Title = result.Title,
-                Body = result.Body,
-                ImageUrl = result.ImageUrl,
-                EventId=result.EventId,
-                GroupId = result.GroupId,
-                UserFCMTokens = result.UserFCMTokens
-            };
-            return Ok(notificationDTO);
+                return BadRequest();
+            }
+            return Ok(result.Response);
         }
 
         // POST api/<NotificationsController>

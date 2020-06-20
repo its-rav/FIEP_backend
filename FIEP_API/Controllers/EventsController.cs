@@ -74,20 +74,8 @@ namespace FIEP_API.Controllers
         [HttpPut("{eventID}/notification")]
         public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateNotificationRequest request)
         {
-            DataTier.Models.Notification notification = new DataTier.Models.Notification()
-            {
-                NotificationID = new Guid(),
-                Body = request.Body,
-                Title = request.Title,
-                ImageUrl = request.ImageUrl,
-                EventId = eventID
-            };
-            _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
-
-            _unitOfWork.Commit();
-            //add to redis
-            _notificationPublisher.Publish(notification.NotificationID.ToString());
-
+            request.EventId = eventID;
+            await _mediator.Send(request);
             return Ok();
         }
         [HttpPost]
