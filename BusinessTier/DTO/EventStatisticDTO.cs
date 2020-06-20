@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace BusinessTier.DTO
@@ -13,7 +14,16 @@ namespace BusinessTier.DTO
 
         public int Followers { get; set; }
 
-        public int postCount { get; set; }
+        public int PostCount { get; set; }
 
+        public static PropertyInfo[] GetAllProperties()
+        {
+            PropertyInfo[] properties =typeof(EventStatisticDTO).GetProperties();
+            return properties;
+        }
+        public static object GetPropValue(object src, string propName)
+        {
+            return src.GetType().GetProperty(propName).GetValue(src, null);
+        }
     }
 }
