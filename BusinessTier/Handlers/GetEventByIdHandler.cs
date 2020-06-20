@@ -34,6 +34,7 @@ namespace BusinessTier.Handlers
                 EventId = result.EventId,
                 EventName = result.EventName,
                 EventImageUrl = result.ImageUrl,
+                Follower = result.EventSubscription.Count,
                 TimeOccur = (DateTime)result.TimeOccur
             };
             return new ResponseBase()
