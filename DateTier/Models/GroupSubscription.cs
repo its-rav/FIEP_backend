@@ -10,6 +10,7 @@ namespace DataTier.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? ModifyDate { get; set; }
         public Boolean IsDeleted { get; set; }
+        public int SubscriptionType { get; set; }
         public virtual GroupInformation Group { get; set; }
         public virtual UserInformation User { get; set; }
     }

@@ -34,9 +34,10 @@ namespace BusinessTier.Handlers
             }
             var groupDTO = new GroupDTO()
             {
+                GroupId = group.GroupId,
                 GroupName = group.GroupName,
                 GroupImageUrl = group.GroupImageUrl,
-                GroupFollower = group.GroupSubscription.Count
+                GroupFollower = group.GroupSubscription.Count,
             };
             return new ResponseBase()
             {

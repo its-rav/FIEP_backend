@@ -105,7 +105,7 @@ namespace BusinessTier.Handlers
                         {
                             eventID = item.EventId,
                             eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
+                            eventImageUrl = item.ImageUrl,
                             timeOccur = item.TimeOccur,
                             location = item.Location
                         };
@@ -116,7 +116,8 @@ namespace BusinessTier.Handlers
                         {
                             eventID = item.EventId,
                             eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
+                            eventImageUrl = item.ImageUrl,
+                            follower = item.EventSubscription.Count,
                             timeOccur = item.TimeOccur,
                             location = item.Location,
                             groupID = item.GroupId,
