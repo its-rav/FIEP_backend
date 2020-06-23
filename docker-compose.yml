@@ -26,12 +26,14 @@ services:
 
   redis:
     container_name: redis
-    image: "redis:alpine"
-    command: redis-server --requirepass feip_str0ngpwd
+    build:
+      context: .
+      dockerfile: Redis/Dockerfile
+    #image: "redis:alpine"
+    #command: redis-server --requirepass feip_str0ngpwd
     ports:
      - "6379:6379"
     volumes:
-     - /Redis/redis-data:/var/lib/redis
-     - /Redis/redis.conf:/usr/local/etc/redis/redis.conf
+     - $PWD/Redis/data:/var/lib/redis
     environment:
      - REDIS_REPLICATION_MODE=master
