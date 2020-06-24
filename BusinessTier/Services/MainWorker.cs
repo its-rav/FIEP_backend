@@ -10,10 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using FirebaseAdmin.Messaging;
 using DataTier.UOW;
-using DataTier.Models;
-using System.Security.Cryptography.X509Certificates;
-using System.Collections;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BusinessTier.Services
 {
@@ -26,7 +22,17 @@ namespace BusinessTier.Services
         {
             _logger = logger;
             string connectionString = configuration.GetConnectionString("RedisCacheConnection");
-            _redis = ConnectionMultiplexer.Connect(connectionString);
+            _redis =ConnectionMultiplexer.Connect(connectionString);
+
+            if (_redis.IsConnected)
+            {
+                _logger.LogInformation($"Redis successfully connected");
+            }
+            else
+            {
+                _logger.LogInformation($"Fail to connect to Redis");
+            }
+
             _unitOfWork = unitOfWork;
         }
         private ConnectionMultiplexer _redis;
@@ -95,20 +101,26 @@ namespace BusinessTier.Services
                 };
 
                 var messaging = FirebaseMessaging.DefaultInstance;
-                var response = await messaging.SendMulticastAsync(multicastMessage);
-                var failedTokens = new List<string>();
+                try {
 
-                if (response.FailureCount > 0)
-                {
-                    for (var i = 0; i < response.Responses.Count; i++)
+                    BatchResponse response;
+                    response = await messaging.SendMulticastAsync(multicastMessage);
+                    var failedTokens = new List<string>();
+
+                    if (response.FailureCount > 0)
                     {
-                        if (!response.Responses[i].IsSuccess)
+                        for (var i = 0; i < response.Responses.Count; i++)
                         {
-                            // The order of responses corresponds to the order of the registration tokens.
-                            failedTokens.Add(multicastMessage.Tokens[i]);
+                            if (!response.Responses[i].IsSuccess)
+                            {
+                                // The order of responses corresponds to the order of the registration tokens.
+                                failedTokens.Add(multicastMessage.Tokens[i]);
+                            }
                         }
+                        _logger.LogInformation($"List of tokens that caused failures: {failedTokens}");
                     }
-                    _logger.LogInformation($"List of tokens that caused failures: {failedTokens}");
+                } catch (Exception e)  {
+                    _logger.LogInformation(e.ToString());
                 }
             });
 
