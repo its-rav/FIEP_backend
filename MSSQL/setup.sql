@@ -189,18 +189,18 @@ INSERT INTO ActivityType(ActivityTypeName)
 VALUES('HACKATHON');
 
 --Event--
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(1,'ACM Contest','Hall Of FPT University', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-acm-fcode.png?alt=media&token=adfcf71c-10c8-48fa-a49a-f75b38572aab');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(3,'Tiktok conpetition','F-Tech Tower', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-tiktok-intrument.jpg?alt=media&token=3eec5742-57c7-429b-9832-4c1574d25969');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(2,'Club celebration','FSOFT-Town-1', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-daitho-fev.jpg?alt=media&token=336524d9-cd9d-4200-80ca-df75fabb32d2');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(5,'Guitar free style','FSOFT-Town-2', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-yongguitar-guitar.jpg?alt=media&token=726b0bee-b68a-463f-9a87-51bc6a6bdcfd');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(2,'Reduce plastic together','FSOFT-Town-3', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-plastic-fev.png?alt=media&token=0f72964b-c031-485b-a98d-ac01e31c3724');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(6,'Martial art for women day','FPT Greenwich', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-womanday-vovinam.jpg?alt=media&token=e47a61a1-9c26-467a-9e78-eaeb0ff6378b');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(1,'ACM Contest','Hall Of FPT University', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-acm-fcode.png?alt=media&token=adfcf71c-10c8-48fa-a49a-f75b38572aab',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(3,'Tiktok conpetition','F-Tech Tower', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-tiktok-intrument.jpg?alt=media&token=3eec5742-57c7-429b-9832-4c1574d25969',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(2,'Club celebration','FSOFT-Town-1', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-daitho-fev.jpg?alt=media&token=336524d9-cd9d-4200-80ca-df75fabb32d2',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(5,'Guitar free style','FSOFT-Town-2', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-yongguitar-guitar.jpg?alt=media&token=726b0bee-b68a-463f-9a87-51bc6a6bdcfd',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(2,'Reduce plastic together','FSOFT-Town-3', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-plastic-fev.png?alt=media&token=0f72964b-c031-485b-a98d-ac01e31c3724',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(6,'Martial art for women day','FPT Greenwich', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-womanday-vovinam.jpg?alt=media&token=e47a61a1-9c26-467a-9e78-eaeb0ff6378b',1);
 
 --EventActivity--
 INSERT INTO EventActivity(EventID,ActivityTypeId,EventActivityDescription)
@@ -214,7 +214,7 @@ VALUES(3,4,'Try be the best of yourself');
 	
 --User FCM Tokens
 INSERT INTO UserFCMToken(UserID,FCMToken)
-VALUES('1d8c8527-e1f4-4a77-85ee-68c15f927817','frXcARq8TOCr5C7b3L0XcZ:APA91bHc2CB8zWiZOjmqV0QJPF6yj5ql3vLOlLODdzal7goM-L4qOXVFjmQ2DX59Z4Q8rguU8vAP7N74XiH2LSLvoyEPtiRtFZtBZWbVuSPukGCTjYpsk8G6JV9RNnJE4gl3qy4UCmF5');
+VALUES('1d8c8527-e1f4-4a77-85ee-68c15f927817','dK1pPIODQdC5w6Ww7d2uQi:APA91bGkkfiB8LUhPJFo7wybBUx6RFNdh3RcEgcjpCeVrxPUxGxKqribb8N6lQqYuMSMxmsobsxMTvci4aFeScm8D6mPEY9Yta1F7ppQ6cSziJCedHjDGwY9_z8g9IQxzatCbArBM1Ol');
 
 --EventSubscription--
 INSERT INTO EventSubscription(EventID,UserID)
