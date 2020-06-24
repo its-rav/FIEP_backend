@@ -59,10 +59,10 @@ namespace FIEP_API.Controllers
             return Ok(result.Response);
         }
 
-        [HttpGet("{eventID}/posts")]
-        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsRequest request)
+        [HttpGet("{EventID}/posts")]
+        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int EventID,[FromQuery]GetPostsRequest request)
         {
-            request.EventId = eventID;
+            request.EventId = EventID;
             var result = await _mediator.Send(request);
             if (result.Response == null)
             {
@@ -71,12 +71,14 @@ namespace FIEP_API.Controllers
             return Ok(result.Response);
         }
 
-        [HttpPut("{eventID}/notification")]
-        public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateEventNotificationRequest request)
+        [HttpPut("{EventID}/notification")]
+        public async Task<ActionResult> CreatePushNotification([FromRoute] int EventID, [FromBody] CreateEventNotificationRequest request)
         {
-            request.EventId = eventID;
-            await _mediator.Send(request);
-            return Ok();
+            request.SetEventId(EventID);
+
+            var result = await _mediator.Send(request);
+
+            return result.Response == null ? BadRequest() : Ok(result.Response);
         }
         [HttpPost]
         public ActionResult CreateEvent([FromQuery] EventDTO dto)

@@ -22,21 +22,35 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(CreateEventNotificationRequest request, CancellationToken cancellationToken)
         {
+            if (request.Body.Trim() == "" || request.Title.Trim() == "")
+            {
+                return new ResponseBase()
+                {
+                    Response = null
+                };
+            }
+
+            if (request.ImageUrl != null && request.ImageUrl.Trim() == "")
+            {
+                request.ImageUrl = null;
+            }
+
             DataTier.Models.Notification notification = new DataTier.Models.Notification()
             {
                 NotificationID = new Guid(),
                 Body = request.Body,
                 Title = request.Title,
                 ImageUrl = request.ImageUrl,
+                EventId=request.GetEventId()
             };
-            notification.EventId = request.EventId;
+            
             _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
             _unitOfWork.Commit();
 
             _notificationPublisher.Publish(notification.NotificationID.ToString());
             return new ResponseBase()
             {
-                Response = null
+                Response = notification.NotificationID.ToString()
             };
         }
     }
