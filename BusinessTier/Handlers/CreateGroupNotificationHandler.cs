@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace BusinessTier.Handlers
 {
-    public class CreateNotificationHandler : IRequestHandler<CreateNotificationRequest, ResponseBase>
+    public class CreateGroupNotificationHandler : IRequestHandler<CreateGroupNotificationRequest, ResponseBase>
     {
         private IUnitOfWork _unitOfWork;
         private NotificationPublisher _notificationPublisher;
-        public CreateNotificationHandler(IUnitOfWork unitOfWork, NotificationPublisher notificationPublisher)
+        public CreateGroupNotificationHandler(IUnitOfWork unitOfWork, NotificationPublisher notificationPublisher)
         {
             _unitOfWork = unitOfWork;
             _notificationPublisher = notificationPublisher;
         }
-        public async  Task<ResponseBase> Handle(CreateNotificationRequest request, CancellationToken cancellationToken)
+        public async  Task<ResponseBase> Handle(CreateGroupNotificationRequest request, CancellationToken cancellationToken)
         {
             DataTier.Models.Notification notification = new DataTier.Models.Notification()
             {
@@ -29,14 +29,7 @@ namespace BusinessTier.Handlers
                 Title = request.Title,
                 ImageUrl = request.ImageUrl,
             };
-            if(request.GroupId != null)
-            {
-                notification.GroupId = request.GroupId;
-            }
-            else
-            {
-                notification.EventId = request.EventId;
-            }
+            notification.GroupId = request.GroupId;
             _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
             _unitOfWork.Commit();
 

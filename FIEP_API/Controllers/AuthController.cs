@@ -34,7 +34,12 @@ namespace FIEP_API.Controllers
         public async Task<ActionResult> VerifyGoogleLogin([FromBody]AuthRequest request)
         {
             string idToken = request.idToken;
-            string fcmToken = request.fcmToken;
+            string fcmToken = "";
+            if (request.fcmToken != null)
+            {
+                fcmToken = request.fcmToken;
+            }
+            
             Dictionary<string, object> customeUserClaims = new Dictionary<string, object>();
 
             var auth = FirebaseAdmin.Auth.FirebaseAuth.DefaultInstance;
@@ -66,39 +71,44 @@ namespace FIEP_API.Controllers
                     CreateDate = DateTime.Now
                 };
                 _unitOfWork.Repository<UserInformation>().Insert(newUser);
-
-                if(existingFCMToken == null)
+                if (!fcmToken.Equals(""))
                 {
-                    UserFCMToken userFCMToken = new UserFCMToken()
+                    if (existingFCMToken == null)
                     {
-                        FCMToken = fcmToken,
-                        UserID = newUser.UserId,
-                    };
-                    _unitOfWork.Repository<UserFCMToken>().Insert(userFCMToken);
-                }
-                else
-                {
-                    existingFCMToken.UserID = newUser.UserId;
-                    _unitOfWork.Repository<UserFCMToken>().Update(existingFCMToken);
+                        UserFCMToken userFCMToken = new UserFCMToken()
+                        {
+                            FCMToken = fcmToken,
+                            UserID = newUser.UserId,
+                        };
+                        _unitOfWork.Repository<UserFCMToken>().Insert(userFCMToken);
+                    }
+                    else
+                    {
+                        existingFCMToken.UserID = newUser.UserId;
+                        _unitOfWork.Repository<UserFCMToken>().Update(existingFCMToken);
+                    }
                 }
                 indentity = newUser.UserId.ToString();
                 roleId = 2;
             }
             else
             {
-                if (existingFCMToken == null)
+                if (!fcmToken.Equals(""))
                 {
-                    UserFCMToken userFCMToken = new UserFCMToken()
+                    if (existingFCMToken == null)
                     {
-                        FCMToken = fcmToken,
-                        UserID = existingStudent.UserId,
-                    };
-                    _unitOfWork.Repository<UserFCMToken>().Insert(userFCMToken);
-                }
-                else
-                {
-                    existingFCMToken.UserID = existingStudent.UserId;
-                    _unitOfWork.Repository<UserFCMToken>().Update(existingFCMToken);
+                        UserFCMToken userFCMToken = new UserFCMToken()
+                        {
+                            FCMToken = fcmToken,
+                            UserID = existingStudent.UserId,
+                        };
+                        _unitOfWork.Repository<UserFCMToken>().Insert(userFCMToken);
+                    }
+                    else
+                    {
+                        existingFCMToken.UserID = existingStudent.UserId;
+                        _unitOfWork.Repository<UserFCMToken>().Update(existingFCMToken);
+                    }
                 }
                 indentity = existingStudent.UserId.ToString();
                 roleId = existingStudent.RoleId;

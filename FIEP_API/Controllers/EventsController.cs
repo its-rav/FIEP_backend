@@ -72,7 +72,7 @@ namespace FIEP_API.Controllers
         }
 
         [HttpPut("{eventID}/notification")]
-        public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateNotificationRequest request)
+        public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateEventNotificationRequest request)
         {
             request.EventId = eventID;
             await _mediator.Send(request);
