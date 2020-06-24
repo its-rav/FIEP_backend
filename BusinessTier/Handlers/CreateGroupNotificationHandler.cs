@@ -20,23 +20,37 @@ namespace BusinessTier.Handlers
             _unitOfWork = unitOfWork;
             _notificationPublisher = notificationPublisher;
         }
-        public async  Task<ResponseBase> Handle(CreateGroupNotificationRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseBase> Handle(CreateGroupNotificationRequest request, CancellationToken cancellationToken)
         {
+            if (request.Body.Trim() == ""|| request.Title.Trim() == "")
+            {
+                return new ResponseBase()
+                {
+                    Response = null
+                };
+            }
+
+            if (request.ImageUrl != null && request.ImageUrl.Trim() == "")
+            {
+                request.ImageUrl = null;
+            }
+
             DataTier.Models.Notification notification = new DataTier.Models.Notification()
             {
                 NotificationID = new Guid(),
-                Body = request.Body,
-                Title = request.Title,
+                Body = request.Body.Trim(),
+                Title = request.Title.Trim(),
                 ImageUrl = request.ImageUrl,
+                GroupId= request.GetGroupId()
             };
-            notification.GroupId = request.GroupId;
+
             _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
             _unitOfWork.Commit();
 
             _notificationPublisher.Publish(notification.NotificationID.ToString());
             return new ResponseBase()
             {
-                Response = null
+                Response = notification.NotificationID.ToString()
             };
         }
     }

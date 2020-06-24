@@ -65,7 +65,7 @@ namespace FIEP_API.Controllers
         [HttpPut("{GroupId}/notification")]
         public async Task<ActionResult> CreatePushNotification([FromRoute] int GroupId, [FromBody] CreateGroupNotificationRequest request)
         {
-            request.GroupId = GroupId;
+            request.SetGroupId(  GroupId);
             var result=  await _mediator.Send(request);
 
             return result.Response == null ? BadRequest() : Ok(result.Response);
