@@ -9,10 +9,16 @@ namespace BusinessTier.Request
 {
     public class CreateGroupNotificationRequest : IRequest<ResponseBase>
     {
-        public int? GroupId { get; set; } = null;
+        private int _GroupId;
+        public int GetGroupId() => this._GroupId;
+        public void SetGroupId(int groupId)
+        {
+            this._GroupId = groupId;
+        }
+
         public string Title { get; set; }
         public string Body { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = null;
     }
 
 }

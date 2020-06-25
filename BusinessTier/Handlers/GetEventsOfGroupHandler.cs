@@ -8,28 +8,46 @@ using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace BusinessTier.Handlers
 {
-    public class GetEventsHandler : IRequestHandler<GetEventsRequest,ResponseBase>
+    public class GetEventsOfGroupHandler : IRequestHandler<GetEventsOfGroupRequest, ResponseBase>
     {
         private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
-        public GetEventsHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
+        public GetEventsOfGroupHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
         {
             _unitOfWork = unitOfWork;
             _cacheStore = cacheStore;
         }
 
-        public async Task<ResponseBase> Handle(GetEventsRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseBase> Handle(GetEventsOfGroupRequest request, CancellationToken cancellationToken)
         {
             IQueryable<Event> listEventAfterFilter;
-            
-            listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
-            
+            if (request.GetGroupId() == null)
+            {
+                return new ResponseBase()
+                {
+                    Response =null
+                };
+            }
+
+            listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.GroupId == request.GetGroupId() && x.IsDeleted == false);
+                if (listEventAfterFilter.ToList().Count <= 0)
+                {
+                    return new ResponseBase()
+                    {
+                        Response = null
+                    };
+                }
+            else
+            {
+                listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
+            }
             if (request.Query.Length > 0)
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query));

@@ -53,24 +53,22 @@ namespace FIEP_API.Controllers
             return Ok(result.Response);
         }
 
-        [HttpGet("{groupId:int}/events")]
-        public async Task<ActionResult> GetEventsOfGroup([FromRoute]int groupId,[FromQuery] GetEventsRequest request)
+        [HttpGet("{GroupId:int}/events")]
+        public async Task<ActionResult> GetEventsOfGroup([FromRoute]int GroupId,[FromQuery] GetEventsOfGroupRequest request)
         {
-            request.GroupId = groupId;
+            request.SetGroupId(GroupId);
             var result = await _mediator.Send(request);
-            if (result.Response == null)
-            {
-                return BadRequest();
-            }
-            return Ok(result.Response);
+
+            return result.Response == null ? BadRequest() : Ok(result.Response);
         }
 
-        [HttpPut("{groupId}/notification")]
-        public async Task<ActionResult> CreatePushNotification([FromRoute] int groupId, [FromBody] CreateGroupNotificationRequest request)
+        [HttpPut("{GroupId}/notification")]
+        public async Task<ActionResult> CreatePushNotification([FromRoute] int GroupId, [FromBody] CreateGroupNotificationRequest request)
         {
-            request.GroupId = groupId;
-            await _mediator.Send(request);
-            return Ok();
+            request.SetGroupId(  GroupId);
+            var result=  await _mediator.Send(request);
+
+            return result.Response == null ? BadRequest() : Ok(result.Response);
         }
     }
 }
