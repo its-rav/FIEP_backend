@@ -60,9 +60,9 @@ namespace FIEP_API.Controllers
         }
 
         [HttpGet("{EventID}/posts")]
-        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int EventID,[FromQuery]GetPostsRequest request)
+        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int EventID,[FromQuery]GetPostsOfEventRequest request)
         {
-            request.EventId = EventID;
+            request.SetEventId(EventID);
             var result = await _mediator.Send(request);
             if (result.Response == null)
             {

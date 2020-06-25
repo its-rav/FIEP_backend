@@ -27,21 +27,9 @@ namespace BusinessTier.Handlers
         public async Task<ResponseBase> Handle(GetEventsRequest request, CancellationToken cancellationToken)
         {
             IQueryable<Event> listEventAfterFilter;
-            if (request.GroupId != null)
-            {
-                 listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.GroupId == request.GroupId && x.IsDeleted == false);
-                if (listEventAfterFilter.ToList().Count <= 0)
-                {
-                    return new ResponseBase()
-                    {
-                        Response = null
-                    };
-                }
-            }
-            else
-            {
-                listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
-            }
+            
+            listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
+            
             if (request.Query.Length > 0)
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query));

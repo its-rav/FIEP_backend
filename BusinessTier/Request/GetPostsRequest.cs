@@ -9,7 +9,6 @@ namespace BusinessTier.Request
 {
     public class GetPostsRequest : IRequest<ResponseBase>
     {
-		public int? EventId { get; set; } = null;
 		//Paging param
 		const int maxPageSize = 10;
 
