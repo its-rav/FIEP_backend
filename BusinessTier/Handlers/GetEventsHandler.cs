@@ -42,6 +42,7 @@ namespace BusinessTier.Handlers
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query)).ToList();
             }
+
             //apply filter
             if (request.ApproveState != 2)
             {
@@ -51,14 +52,17 @@ namespace BusinessTier.Handlers
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now).ToList();
             }
+
             //apply paging
             var listEventsAfterPaging = listEventAfterFilter
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToList();
+
             //apply sort
             var listEventsAfterSort = new List<Event>();
-            switch (request.Field)
+
+            switch (request.SortBy)
             {
                 case EventFields.TimeOccur: //sort by time occur
                     if (request.isDesc)

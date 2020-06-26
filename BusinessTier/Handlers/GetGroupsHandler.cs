@@ -53,7 +53,7 @@ namespace BusinessTier.Handlers
                 .ToList();
             //apply sort
             var listGroupsAfterSort = new List<GroupInformation>();
-            switch (request.Field)
+            switch (request.SortBy)
             {
                 case GroupFields.Follower: //sort by number of follower
                     if (request.isDesc)

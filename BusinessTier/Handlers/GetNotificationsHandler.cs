@@ -1,4 +1,5 @@
 ﻿using BusinessTier.DTO;
+using BusinessTier.Fields;
 using BusinessTier.Request;
 using BusinessTier.Response;
 using DataTier.Models;
@@ -28,13 +29,28 @@ namespace BusinessTier.Handlers
                 listNotificationsAfterFilter = listNotificationsAfterFilter.Where(x => x.Title.Contains(request.Query));
             }
             //apply paging
-            var listNotificationssAfterPaging = listNotificationsAfterFilter
+            var listNotificationsAfterPaging = listNotificationsAfterFilter
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToList();
 
+            var listNotificationssAfterSort = new List<Notification>();
+            switch (request.SortBy)
+            {
+                case NotificationFields.CreateDate: //sort by number of follower
+                    if (request.isDesc)
+                    {
+                        listNotificationssAfterSort = listNotificationsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
+                    }
+                    else
+                    {
+                        listNotificationssAfterSort = listNotificationsAfterPaging.OrderBy(x => x.CreateDate).ToList();
+                    }
+                    break;
+            }
+
             var result = new List<NotificationDTO>();
-            foreach (var item in listNotificationssAfterPaging)
+            foreach (var item in listNotificationssAfterSort)
             {
                 NotificationDTO notificationDTO = new NotificationDTO()
                 {
@@ -48,10 +64,13 @@ namespace BusinessTier.Handlers
                 };
                 result.Add(notificationDTO);
             }
+
+            
+
             var response  = new
             {
                 data = result,
-                totalPages = Math.Ceiling((double)listNotificationssAfterPaging.ToList().Count / request.PageSize)
+                totalPages = Math.Ceiling((double)listNotificationssAfterSort.ToList().Count / request.PageSize)
             };
 
             return new ResponseBase()

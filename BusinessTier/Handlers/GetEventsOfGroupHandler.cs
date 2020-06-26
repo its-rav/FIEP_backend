@@ -75,7 +75,7 @@ namespace BusinessTier.Handlers
                 .ToList();
             //apply sort
             var listEventsAfterSort = new List<Event>();
-            switch (request.Field)
+            switch (request.SortBy)
             {
                 case EventFields.TimeOccur: //sort by time occur
                     if (request.isDesc)
