@@ -28,35 +28,16 @@ namespace BusinessTier.Handlers
         public async Task<ResponseBase> Handle(GetEventsRequest request, CancellationToken cancellationToken)
         {
             List<Event> listEventAfterFilter;
-            if (request.GroupId != null)
+
+            if (!_cacheStore.IsExist(eventCacheKey))
             {
-                if(!_cacheStore.IsExist(eventCacheKey))
-                {
-                    listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.GroupId == request.GroupId && x.IsDeleted == false).ToList();
-                }
-                else
-                {
-                    listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey).Where(x => x.GroupId == request.GroupId && x.IsDeleted == false).ToList();
-                }
-                if (listEventAfterFilter.ToList().Count <= 0)
-                {
-                    return new ResponseBase()
-                    {
-                        Response = null
-                    };
-                }
+                listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false).ToList();
             }
             else
             {
-                if(!_cacheStore.IsExist(eventCacheKey))
-                {
-                    listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false).ToList();
-                }
-                else
-                {
-                    listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey);
-                }
+                listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey);
             }
+
             if (request.Query.Length > 0)
             {
                 listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query)).ToList();

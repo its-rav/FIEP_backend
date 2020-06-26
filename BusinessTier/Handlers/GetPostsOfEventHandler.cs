@@ -14,21 +14,37 @@ using System.Threading.Tasks;
 
 namespace BusinessTier.Handlers
 {
-    public class GetPostsHandler : IRequestHandler<GetPostsRequest, ResponseBase>
+    public class GetPostsOfEventHandler : IRequestHandler<GetPostsOfEventRequest, ResponseBase>
     {
         private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
-        public GetPostsHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
+        public GetPostsOfEventHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
         {
             _unitOfWork = unitOfWork;
             _cacheStore = cacheStore;
         }
-        public async Task<ResponseBase> Handle(GetPostsRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseBase> Handle(GetPostsOfEventRequest request, CancellationToken cancellationToken)
         {
             IQueryable<Post> listPostsAfterSearch;
-            
-            listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
-            
+            if (request.GetEventId() == null)
+            {
+                return new ResponseBase()
+                {
+                    Response = null
+                };
+            }
+                listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.EventId == request.GetEventId() && x.IsDeleted == false);
+                if (listPostsAfterSearch.ToList().Count <= 0)
+                {
+                    return new ResponseBase()
+                    {
+                        Response = null
+                    };
+                }
+            else
+            {
+                listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
+            }
             //apply paging
             var listPostsAfterPaging = listPostsAfterSearch
                .Skip((request.PageNumber - 1) * request.PageSize)
@@ -99,5 +115,7 @@ namespace BusinessTier.Handlers
                 Response = response
             };
         }
+
+        
     }
 }

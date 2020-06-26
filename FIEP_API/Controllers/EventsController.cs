@@ -57,9 +57,9 @@ namespace FIEP_API.Controllers
         }
 
         [HttpGet("{eventID}/posts")]
-        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsRequest request)
+        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsOfEventRequest request)
         {
-            request.EventId = eventID;
+            request.SetEventId(eventID);
             var result = await _mediator.Send(request);
             if (result.Response == null)
             {
@@ -71,7 +71,7 @@ namespace FIEP_API.Controllers
         [HttpPut("{eventID}/notification")]
         public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateEventNotificationRequest request)
         {
-            request.EventId = eventID;
+            request.SetEventId(eventID);
             await _mediator.Send(request);
             return Ok();
         }

@@ -7,8 +7,17 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class GetEventsRequest : IRequest<ResponseBase>
-    {
+   public  class GetEventsOfGroupRequest:IRequest<ResponseBase>
+	{
+		private int _GroupId;
+		public int GetGroupId()
+        {
+			return _GroupId;
+        }
+		public void SetGroupId(int GroupId)
+        {
+			this._GroupId = GroupId;
+        }
 		//Search param
 		public string Query { get; set; } = "";
 		//Filter param
@@ -46,17 +55,16 @@ namespace BusinessTier.Request
 		public Boolean isDesc { get; set; } = true;
 		//field param
 		private string _FieldSize = "long";
-		public string FieldSize {
+		public string FieldSize
+		{
 			get
 			{
 				return _FieldSize;
 			}
 			set
 			{
-				_FieldSize = (value.CompareTo("short") == 0 || value.CompareTo("medium") == 0) ? value: "long";
+				_FieldSize = (value.CompareTo("short") == 0 || value.CompareTo("medium") == 0) ? value : "long";
 			}
 		}
-
-
 	}
 }
