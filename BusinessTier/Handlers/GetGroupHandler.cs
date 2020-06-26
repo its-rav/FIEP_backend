@@ -17,6 +17,7 @@ namespace BusinessTier.Handlers
     {
         private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
+        const string groupCacheKey = "GroupsTable";
         public GetGroupHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
         {
             _unitOfWork = unitOfWork;
@@ -24,7 +25,22 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(GetGroupByIdRequest request, CancellationToken cancellationToken)
         {
-            var group = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == request.GroupId && x.IsDeleted == false);
+            GroupInformation group= null;
+            if(_cacheStore.IsExist(groupCacheKey))
+            {
+                foreach(var item in _cacheStore.Get<List<GroupInformation>>(groupCacheKey))
+                {
+                    if(item.GroupId == request.GroupId && item.IsDeleted == false)
+                    {
+                        group = item;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                group = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == request.GroupId && x.IsDeleted == false);
+            }
             if (group == null)
             {
                 return new ResponseBase()

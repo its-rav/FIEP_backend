@@ -38,9 +38,6 @@ namespace FIEP_API.Controllers
 
             var result = await _mediator.Send(request);
 
-            //please remove this in later commit
-            new GoogleSheetApiUtils(_unitOfWork).UpdateDataToSheet();
-
             if (result.Response == null)
             {
                 return BadRequest();
@@ -79,13 +76,16 @@ namespace FIEP_API.Controllers
             return Ok();
         }
         [HttpPost]
-        public ActionResult CreateEvent([FromQuery] EventDTO dto)
+        public ActionResult CreateEvent()
         {
             var model = new Event()
             {
-                EventId = dto.EventId,
-                EventName = dto.EventName,
+                EventId = 2,
+                EventName = "Tiktok competition",
                 GroupId = 3,
+                Location = "F-Tech Tower",
+                ApprovalState = 1,
+                ImageUrl = "https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-tiktok-intrument.jpg?alt=media&token=3eec5742-57c7-429b-9832-4c1574d25969",
             };
             _unitOfWork.Repository<Event>().Update(model);
             _unitOfWork.Commit();

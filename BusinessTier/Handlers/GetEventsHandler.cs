@@ -18,6 +18,7 @@ namespace BusinessTier.Handlers
     {
         private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
+        const string eventCacheKey = "EventsTable";
         public GetEventsHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
         {
             _unitOfWork = unitOfWork;
@@ -26,10 +27,17 @@ namespace BusinessTier.Handlers
 
         public async Task<ResponseBase> Handle(GetEventsRequest request, CancellationToken cancellationToken)
         {
-            IQueryable<Event> listEventAfterFilter;
+            List<Event> listEventAfterFilter;
             if (request.GroupId != null)
             {
-                 listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.GroupId == request.GroupId && x.IsDeleted == false);
+                if(!_cacheStore.IsExist(eventCacheKey))
+                {
+                    listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.GroupId == request.GroupId && x.IsDeleted == false).ToList();
+                }
+                else
+                {
+                    listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey).Where(x => x.GroupId == request.GroupId && x.IsDeleted == false).ToList();
+                }
                 if (listEventAfterFilter.ToList().Count <= 0)
                 {
                     return new ResponseBase()
@@ -40,20 +48,27 @@ namespace BusinessTier.Handlers
             }
             else
             {
-                listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
+                if(!_cacheStore.IsExist(eventCacheKey))
+                {
+                    listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false).ToList();
+                }
+                else
+                {
+                    listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey);
+                }
             }
             if (request.Query.Length > 0)
             {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query));
+                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query)).ToList();
             }
             //apply filter
             if (request.ApproveState != 2)
             {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState);
+                listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState).ToList();
             }
             if (request.IsUpComming)
             {
-                listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now);
+                listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now).ToList();
             }
             //apply paging
             var listEventsAfterPaging = listEventAfterFilter
