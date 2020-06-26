@@ -57,7 +57,7 @@ namespace FIEP_API
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FIEP API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
 
             services.AddCors(options =>
@@ -94,6 +94,7 @@ namespace FIEP_API
 
             //middleware
             //app.UseAuthorizationMiddleware();
+            app.UseUpdateRedisAndSheetMiddleware();
 
             var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "firebase-fiep-private-key.json");
             FirebaseApp.Create(new AppOptions

@@ -1,4 +1,5 @@
-﻿using BusinessTier.DTO;
+﻿using BusinessTier.DistributedCache;
+using BusinessTier.DTO;
 using BusinessTier.Request;
 using BusinessTier.Response;
 using DataTier.Models;
@@ -15,14 +16,32 @@ namespace BusinessTier.Handlers
     public class GetEventByIdHandler : IRequestHandler<GetEventByIdRequest, ResponseBase>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public GetEventByIdHandler(IUnitOfWork unitOfWork)
+        private readonly ICacheStore _cacheStore;
+        const string eventCacheKey = "EventsTable";
+        public GetEventByIdHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
         {
             _unitOfWork = unitOfWork;
+            _cacheStore = cacheStore;
         }
         public async Task<ResponseBase> Handle(GetEventByIdRequest request, CancellationToken cancellationToken)
         {
-            var result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == request.EventId && x.IsDeleted == false);
-            if(result == null)
+            Event result = null;
+            if (_cacheStore.IsExist(eventCacheKey))
+            {
+                foreach (var item in _cacheStore.Get<List<Event>>(eventCacheKey))
+                {
+                    if (item.EventId == request.EventId && item.IsDeleted == false)
+                    {
+                        result = item;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == request.EventId && x.IsDeleted == false);
+            }
+            if (result == null)
             {
                 return new ResponseBase()
                 {

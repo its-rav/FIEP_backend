@@ -18,6 +18,7 @@ namespace BusinessTier.Handlers
     {
         private readonly ICacheStore _cacheStore;
         private IUnitOfWork _unitOfWork;
+        const string groupCacheKey = "GroupsTable";
         public GetGroupsHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore)
         {
             _unitOfWork = unitOfWork;
@@ -25,8 +26,16 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(GetGroupsRequest request, CancellationToken cancellationToken)
         {
-            var listGroupAfterFilter = _unitOfWork.Repository<GroupInformation>().GetAll().Where(x => x.IsDeleted == false);
-            if (listGroupAfterFilter.ToList().Count <= 0)
+            List<GroupInformation> listGroupAfterFilter;
+            if(!_cacheStore.IsExist(groupCacheKey))
+            {
+                listGroupAfterFilter = _unitOfWork.Repository<GroupInformation>().GetAll().Where(x => x.IsDeleted == false).ToList();
+            }
+            else
+            {
+                listGroupAfterFilter = _cacheStore.Get<List<GroupInformation>>(groupCacheKey).Where(x => x.IsDeleted == false).ToList();
+            }
+            if (listGroupAfterFilter.Count <= 0)
             {
                 return new ResponseBase()
                 {
@@ -35,7 +44,7 @@ namespace BusinessTier.Handlers
             }
             if (request.Query.Length > 0)
             {
-                listGroupAfterFilter = listGroupAfterFilter.Where(x => x.GroupName.Contains(request.Query));
+                listGroupAfterFilter = listGroupAfterFilter.Where(x => x.GroupName.Contains(request.Query)).ToList();
             }
             //apply paging
             var listGroupsAfterPaging = listGroupAfterFilter
