@@ -61,7 +61,7 @@ namespace FIEP_API.Controllers
 
             //apply sort
             var listCommentsAfterSort = new List<Comment>();
-            switch (request.Field)
+            switch (request.SortBy)
             {
                 case CommentFields.CreateDate: //sort by time occur
                     if (request.isDesc)

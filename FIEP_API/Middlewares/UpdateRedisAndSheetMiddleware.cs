@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BusinessTier.DistributedCache;
-using BusinessTier.Services;
+using BusinessTier.Utilities;
 using DataTier.Models;
 using DataTier.UOW;
 using Microsoft.AspNetCore.Builder;

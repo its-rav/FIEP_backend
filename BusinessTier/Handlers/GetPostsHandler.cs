@@ -37,7 +37,7 @@ namespace BusinessTier.Handlers
 
             //apply sort
             var listPostsAfterSort = new List<Post>();
-            switch (request.Field)
+            switch (request.SortBy)
             {
                 case PostFields.CreateDate: //sort by time occur
                     if (request.isDesc)
