@@ -75,21 +75,37 @@ namespace FIEP_API.Controllers
             await _mediator.Send(request);
             return Ok();
         }
-        [HttpPost]
-        public ActionResult CreateEvent()
+        [HttpPut("{eventID}")]
+        public async Task<ActionResult> UpdateEvent([FromRoute]int eventID,[FromBody]UpdateEventRequest request)
         {
-            var model = new Event()
+            request.setEventId(eventID);
+            var result = await _mediator.Send(request);
+            if(result.Response == 0)
             {
-                EventId = 2,
-                EventName = "Tiktok competition",
-                GroupId = 3,
-                Location = "F-Tech Tower",
-                ApprovalState = 1,
-                ImageUrl = "https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-tiktok-intrument.jpg?alt=media&token=3eec5742-57c7-429b-9832-4c1574d25969",
-            };
-            _unitOfWork.Repository<Event>().Update(model);
-            _unitOfWork.Commit();
-            return Ok("testing");
+                return BadRequest();
+            }
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreateEvent([FromBody]CreateEventRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+        [HttpDelete("{eventID}")]
+        public async Task<ActionResult> DeleteEvent([FromRoute]int eventID,DeleteEventRequest request)
+        {
+            request.setEventId(eventID);
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
+            return Ok();
         }
     }
 }
