@@ -20,7 +20,7 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(DeleteEventRequest request, CancellationToken cancellationToken)
         {
-            var existingEvent = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == request.getEventId());
+            var existingEvent = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == request.EventId && x.IsDeleted == false);
             if (existingEvent == null)
             {
                 return new ResponseBase()

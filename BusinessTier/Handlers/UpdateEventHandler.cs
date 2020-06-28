@@ -21,7 +21,7 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(UpdateEventRequest request, CancellationToken cancellationToken)
         {
-            var existingEvent = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == request.getEventId());
+            var existingEvent = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == request.getEventId() && x.IsDeleted == false);
             if(existingEvent == null)
             {
                 return new ResponseBase()
