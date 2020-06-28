@@ -70,6 +70,7 @@ namespace BusinessTier.Handlers
             var response  = new
             {
                 data = result,
+                currentPage = request.PageNumber,
                 totalPages = Math.Ceiling((double)listNotificationssAfterSort.ToList().Count / request.PageSize)
             };
 

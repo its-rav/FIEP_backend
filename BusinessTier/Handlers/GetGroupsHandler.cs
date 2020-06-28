@@ -105,6 +105,7 @@ namespace BusinessTier.Handlers
             var response = new
             {
                 data = listOfGroups,
+                currentPage = request.PageNumber,
                 totalPages = Math.Ceiling((double)listGroupAfterFilter.ToList().Count / request.PageSize)
             };
             return new ResponseBase()
