@@ -50,74 +50,15 @@ namespace FIEP_API.Controllers
 
 
         [HttpGet("{PostId}/comments")]
-        public ActionResult GetCommentsOfPost(Guid PostId,[FromQuery]GetCommentsRequest request)
+        public async Task<ActionResult> GetCommentsOfPost(Guid PostId,[FromQuery]GetCommentsRequest request)
         {
-            var listCommentsAfterSearch = _unitOfWork.Repository<Comment>().FindAllByProperty(x => x.PostId.Equals(PostId) && x.IsDeleted == false);
-            //apply paging
-            var listCommentsAfterPaging = listCommentsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
-
-            //apply sort
-            var listCommentsAfterSort = new List<Comment>();
-            switch (request.SortBy)
+            request.setPostID(PostId);
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                case CommentFields.CreateDate: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listCommentsAfterSort = listCommentsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
-                    }
-                    else
-                    {
-                        listCommentsAfterSort = listCommentsAfterPaging.OrderBy(x => x.CreateDate).ToList();
-                    }
-                    break;
+                return BadRequest();
             }
-
-            var listOfComments = new List<dynamic>();
-            foreach (var item in listCommentsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var commentObj = new
-                        {
-                            commentId = item.CommentId,
-                            commentContent = item.Content
-                        };
-
-                        listOfComments.Add(commentObj);
-                        break;
-                    case "medium":
-                        var commentObjm = new
-                        {
-                            commentId = item.CommentId,
-                            commentContent = item.Content,
-                            postId = item.PostId,
-                            userId = item.CommentOwnerId
-                        };
-                        listOfComments.Add(commentObjm);
-                        break;
-                    default:
-                        var commentObjl = new
-                        {
-                            commentId = item.CommentId,
-                            commentContent = item.Content,
-                            postId = item.PostId,
-                            userId = item.CommentOwnerId,
-                            createDate = item.CreateDate
-                        };
-
-                        listOfComments.Add(commentObjl);
-                        break;
-                }
-            }
-            return Ok(new
-            {
-                data = listOfComments,
-                totalPages = Math.Ceiling((double)listCommentsAfterSearch.ToList().Count / request.PageSize)
-            });
+            return Ok(result.Response);           
         }
     }
 }

@@ -92,6 +92,7 @@ namespace BusinessTier.Handlers
             var response = new
             {
                 data = listOfPosts,
+                currentPage = request.PageNumber,
                 totalPages = Math.Ceiling((double)listPostsAfterSearch.ToList().Count / request.PageSize)
             };
             return new ResponseBase()
