@@ -6,8 +6,8 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class DeleteEventRequest : IRequest<ResponseBase>
+    public class DeleteGroupRequest : IRequest<ResponseBase>
     {
-        public int EventId { get; set;}
+        public int GroupId { get; set; }
     }
 }

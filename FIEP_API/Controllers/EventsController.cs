@@ -96,10 +96,9 @@ namespace FIEP_API.Controllers
             }
             return Ok();
         }
-        [HttpDelete("{eventID}")]
-        public async Task<ActionResult> DeleteEvent([FromRoute]int eventID,DeleteEventRequest request)
+        [HttpDelete("{EventId}")]
+        public async Task<ActionResult> DeleteEvent([FromRoute]DeleteEventRequest request)
         {
-            request.setEventId(eventID);
             var result = await _mediator.Send(request);
             if (result.Response == 0)
             {
