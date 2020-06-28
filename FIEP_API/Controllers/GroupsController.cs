@@ -54,7 +54,7 @@ namespace FIEP_API.Controllers
         }
 
         [HttpGet("{GroupId:int}/events")]
-        public async Task<ActionResult> GetEventsOfGroup([FromRoute]int GroupId,[FromQuery] GetEventsOfGroupRequest request)
+        public async Task<ActionResult> GetEventsOfGroup([FromRoute]int GroupId, [FromQuery] GetEventsOfGroupRequest request)
         {
             request.SetGroupId(GroupId);
             var result = await _mediator.Send(request);
@@ -65,10 +65,43 @@ namespace FIEP_API.Controllers
         [HttpPut("{GroupId}/notification")]
         public async Task<ActionResult> CreatePushNotification([FromRoute] int GroupId, [FromBody] CreateGroupNotificationRequest request)
         {
-            request.SetGroupId(  GroupId);
-            var result=  await _mediator.Send(request);
+            request.SetGroupId(GroupId);
+            var result = await _mediator.Send(request);
 
             return result.Response == null ? BadRequest() : Ok(result.Response);
+        }
+        [HttpPut("{groupId}")]
+        public async Task<ActionResult> UpdateGroup([FromRoute]int groupId, [FromBody]UpdateOrCreateGroupRequest request)
+        {
+            request.setGroupId(groupId);
+            request.setIsUpdate(true);
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreateGroup([FromBody]UpdateOrCreateGroupRequest request)
+        {
+            request.setIsUpdate(false);
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+        [HttpDelete("{GroupId}")]
+        public async Task<ActionResult> DeleteGroup([FromRoute]DeleteGroupRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
+            return Ok();
         }
     }
 }
