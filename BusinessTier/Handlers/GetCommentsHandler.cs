@@ -13,17 +13,17 @@ using System.Threading.Tasks;
 
 namespace BusinessTier.Handlers
 {
-    public class GetCommentsOfPostHandler : IRequestHandler<GetCommentsOfPostRequest, ResponseBase>
+    public class GetCommentsHandler : IRequestHandler<GetCommentsRequest, ResponseBase>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public GetCommentsOfPostHandler(IUnitOfWork unitOfWork)
+        public GetCommentsHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<ResponseBase> Handle(GetCommentsOfPostRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseBase> Handle(GetCommentsRequest request, CancellationToken cancellationToken)
         {
-            var listCommentsAfterSearch = _unitOfWork.Repository<Comment>().FindAllByProperty(x => x.PostId.Equals(request.getPostID()) && x.IsDeleted == false);
-            if(listCommentsAfterSearch.Count() <= 0)
+            var listCommentsAfterSearch = _unitOfWork.Repository<Comment>().FindAllByProperty(x => x.IsDeleted == false);
+            if (listCommentsAfterSearch.Count() <= 0)
             {
                 return new ResponseBase()
                 {
@@ -40,7 +40,7 @@ namespace BusinessTier.Handlers
             var listCommentsAfterSort = new List<Comment>();
             switch (request.SortBy)
             {
-                case CommentFields.CreateDate: //sort by time occur
+                case CommentFields.CreateDate:
                     if (request.isDesc)
                     {
                         listCommentsAfterSort = listCommentsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();

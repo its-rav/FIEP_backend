@@ -50,7 +50,7 @@ namespace FIEP_API.Controllers
 
 
         [HttpGet("{PostId}/comments")]
-        public async Task<ActionResult> GetCommentsOfPost(Guid PostId,[FromQuery]GetCommentsRequest request)
+        public async Task<ActionResult> GetCommentsOfPost(Guid PostId,[FromQuery]GetCommentsOfPostRequest request)
         {
             request.setPostID(PostId);
             var result = await _mediator.Send(request);

@@ -7,16 +7,7 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class GetCommentsRequest: FilterParametersRequest<CommentFields>,IRequest<ResponseBase>
+    public class GetCommentsRequest : FilterParametersRequest<CommentFields>,IRequest<ResponseBase>
     {
-        private Guid PostId { get; set; }
-        public void setPostID(Guid id)
-        {
-            PostId = id;
-        }
-        public Guid getPostID()
-        {
-            return PostId;
-        }
-	}
+    }
 }
