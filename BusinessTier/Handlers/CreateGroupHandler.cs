@@ -27,18 +27,16 @@ namespace BusinessTier.Handlers
                 GroupImageUrl = request.ImageUrl,
                 
             };
-            _unitOfWork.Repository<GroupInformation>().Insert(newGroup);
+            var result = _unitOfWork.Repository<GroupInformation>().Insert(newGroup);
             _unitOfWork.Commit();
-            var existingGroup = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupName.Equals(request.GroupName)
-                                                                                                && x.GroupImageUrl.Equals(request.ImageUrl) && x.IsDeleted == false);
+            var id = result.Entity.GroupId;
             var newGroupSub = new GroupSubscription()
             {
-                GroupId = existingGroup.GroupId,
+                GroupId = id,
                 UserId = request.ManagerId,
                 SubscriptionType = 2,
             };
-            existingGroup.GroupSubscription.Add(newGroupSub);
-            _unitOfWork.Repository<GroupInformation>().Update(newGroup);
+            _unitOfWork.Repository<GroupSubscription>().Insert(newGroupSub);
             _unitOfWork.Commit();
             return new ResponseBase()
             {

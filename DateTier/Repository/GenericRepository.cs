@@ -1,6 +1,7 @@
 ﻿
 using DataTier.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,9 +39,10 @@ namespace DataTier.Repository
         {
             return table.Select(x => x);
         }
-        public void Insert(T obj)
+        public EntityEntry<T> Insert(T obj)
         {
-            table.Add(obj);
+            var result = table.Add(obj);
+            return result;
         }
 
         public void InsertRange(List<T> obj)
