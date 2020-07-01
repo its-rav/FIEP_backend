@@ -70,11 +70,10 @@ namespace FIEP_API.Controllers
 
             return result.Response == null ? BadRequest() : Ok(result.Response);
         }
-        [HttpPut("{groupId}")]
-        public async Task<ActionResult> UpdateGroup([FromRoute]int groupId, [FromBody]UpdateOrCreateGroupRequest request)
+        [HttpPatch("{groupId}")]
+        public async Task<ActionResult> UpdateGroup([FromRoute]int groupId, [FromBody]UpdateGroupRequest request)
         {
             request.setGroupId(groupId);
-            request.setIsUpdate(true);
             var result = await _mediator.Send(request);
             if (result.Response == 0)
             {
@@ -83,9 +82,8 @@ namespace FIEP_API.Controllers
             return Ok();
         }
         [HttpPost]
-        public async Task<ActionResult> CreateGroup([FromBody]UpdateOrCreateGroupRequest request)
+        public async Task<ActionResult> CreateGroup([FromBody]CreateGroupRequest request)
         {
-            request.setIsUpdate(false);
             var result = await _mediator.Send(request);
             if (result.Response == 0)
             {
