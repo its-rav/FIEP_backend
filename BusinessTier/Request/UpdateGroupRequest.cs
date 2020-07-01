@@ -1,4 +1,5 @@
 ﻿using BusinessTier.Response;
+using DataTier.Models;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class UpdateOrCreateGroupRequest : IRequest<ResponseBase>
+    public class UpdateGroupRequest : UpdateBaseRequest<GroupInformation>,IRequest<ResponseBase>
     {
         private int Groupid { get; set; }
         public void setGroupId(int id)
@@ -16,17 +17,6 @@ namespace BusinessTier.Request
         public int getGroupId()
         {
             return Groupid;
-        }
-        public string ImageUrl { get; set; }
-        public string GroupName { get; set; }
-        private Boolean isUpdateRequest { get; set; }
-        public void setIsUpdate(Boolean value)
-        {
-            isUpdateRequest = value;
-        }
-        public Boolean getIsUpdate()
-        {
-            return isUpdateRequest;
         }
     }
 }
