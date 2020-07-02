@@ -24,10 +24,21 @@ namespace BusinessTier.Handlers
         public async  Task<ResponseBase> Handle(GetNotificationsRequest request, CancellationToken cancellationToken)
         {
             var listNotificationsAfterFilter = _unitOfWork.Repository<Notification>().GetAll();
-            if (request.Query.Length > 0)
+            if(request.Query != null)
             {
-                listNotificationsAfterFilter = listNotificationsAfterFilter.Where(x => x.Title.Contains(request.Query));
+                if (request.Query.Trim().Length > 0)
+                {
+                    listNotificationsAfterFilter = listNotificationsAfterFilter.Where(x => x.Title.Contains(request.Query.Trim()));
+                    if (listNotificationsAfterFilter.Count() <= 0)
+                    {
+                        return new ResponseBase()
+                        {
+                            Response = null
+                        };
+                    }
+                }
             }
+            
             //apply paging
             var listNotificationsAfterPaging = listNotificationsAfterFilter
                 .Skip((request.PageNumber - 1) * request.PageSize)

@@ -18,7 +18,7 @@ namespace FIEP_API.Controllers
         {
             _mediator = mediator;
         }
-        [HttpPut("{GroupId}/{UserId}")]
+        [HttpPatch("{GroupId}/{UserId}")]
         public async Task<ActionResult> UpdateGroupSub([FromRoute]int GroupId, [FromRoute]Guid UserId,[FromBody]UpdateGroupSubRequest request)
         {
             request.setGroupId(GroupId);
