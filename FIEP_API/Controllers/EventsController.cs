@@ -75,7 +75,7 @@ namespace FIEP_API.Controllers
             await _mediator.Send(request);
             return Ok();
         }
-        [HttpPut("{eventID}")]
+        [HttpPatch("{eventID}")]
         public async Task<ActionResult> UpdateEvent([FromRoute]int eventID,[FromBody]UpdateEventRequest request)
         {
             request.setEventId(eventID);
