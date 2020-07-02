@@ -23,10 +23,20 @@ namespace BusinessTier.Handlers
         public async Task<ResponseBase> Handle(GetUsersRequest request, CancellationToken cancellationToken)
         {
             var listUsersAfterFilter = _unitOfWork.Repository<UserInformation>().GetAll().Where(x => x.IsDeleted == false);
-            if (request.Query.Length > 0)
+            if (request.Query != null)
             {
-                listUsersAfterFilter = listUsersAfterFilter.Where(x => x.Fullname.Contains(request.Query));
-            }
+                if (request.Query.Trim().Length > 0)
+                {
+                    listUsersAfterFilter = listUsersAfterFilter.Where(x => x.Fullname.Contains(request.Query.Trim()));
+                    if (listUsersAfterFilter.Count() <= 0)
+                    {
+                        return new ResponseBase()
+                        {
+                            Response = null
+                        };
+                    }
+                }
+            }           
             if(listUsersAfterFilter.Count() <= 0)
             {
                 return new ResponseBase()

@@ -21,23 +21,32 @@ namespace BusinessTier.Handlers
 
         public async Task<ResponseBase> Handle(UpdateGroupSubRequest request, CancellationToken cancellationToken)
         {
-            var existingGroupSub = _unitOfWork.Repository<GroupSubscription>().FindFirstByProperty(x => x.GroupId == request.getGroupId() &&
-                                                                                                        x.UserId == request.getUserId() && x.IsDeleted == false);
-            if(existingGroupSub == null || (request.SubscriptionType != 1 && request.SubscriptionType != 2))
+            if (request.patchDoc != null)
+            {
+                var existingGroupSub = _unitOfWork.Repository<GroupSubscription>().FindFirstByProperty(x => x.GroupId == request.getGroupId() 
+                                                                                                        && x.UserId == request.getUserId() && x.IsDeleted == false);
+
+                if (existingGroupSub == null)
+                {
+                    return new ResponseBase()
+                    {
+                        Response = 0
+                    };
+                }
+                request.patchDoc.ApplyTo(existingGroupSub);
+                _unitOfWork.Commit();
+                return new ResponseBase()
+                {
+                    Response = 1
+                };
+            }
+            else
             {
                 return new ResponseBase()
                 {
                     Response = 0
                 };
             }
-            existingGroupSub.SubscriptionType = request.SubscriptionType;
-            existingGroupSub.ModifyDate = DateTime.Now;
-            _unitOfWork.Repository<GroupSubscription>().Update(existingGroupSub);
-            _unitOfWork.Commit();
-            return new ResponseBase()
-            {
-                Response = 1
-            };
         }
     }
 }

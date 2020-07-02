@@ -42,10 +42,21 @@ namespace BusinessTier.Handlers
                     Response = null
                 };
             }
-            if (request.Query.Length > 0)
+            if(request.Query != null)
             {
-                listGroupAfterFilter = listGroupAfterFilter.Where(x => x.GroupName.Contains(request.Query)).ToList();
+                if (request.Query.Trim().Length > 0)
+                {
+                    listGroupAfterFilter = listGroupAfterFilter.Where(x => x.GroupName.Contains(request.Query.Trim())).ToList();
+                    if (listGroupAfterFilter.Count() <= 0)
+                    {
+                        return new ResponseBase()
+                        {
+                            Response = null
+                        };
+                    }
+                }
             }
+            
             //apply paging
             var listGroupsAfterPaging = listGroupAfterFilter
                 .Skip((request.PageNumber - 1) * request.PageSize)
