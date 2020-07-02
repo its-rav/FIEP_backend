@@ -60,11 +60,10 @@ namespace FIEP_API.Controllers
             }
             return Ok(result.Response);           
         }
-        [HttpPut("{postId}")]
-        public async Task<ActionResult> UpdatePost([FromRoute]Guid postId, [FromBody]UpdateOrCreatePostRequest request)
+        [HttpPatch("{postId}")]
+        public async Task<ActionResult> UpdatePost([FromRoute]Guid postId, [FromBody]UpdatePostRequest request)
         {
             request.setPostId(postId);
-            request.setIsUpdate(true);
             var result = await _mediator.Send(request);
             if (result.Response == 0)
             {
@@ -73,9 +72,8 @@ namespace FIEP_API.Controllers
             return Ok();
         }
         [HttpPost]
-        public async Task<ActionResult> CreatePost([FromBody]UpdateOrCreatePostRequest request)
+        public async Task<ActionResult> CreatePost([FromBody]CreatePostRequest request)
         {
-            request.setIsUpdate(false);
             var result = await _mediator.Send(request);
             if (result.Response == 0)
             {

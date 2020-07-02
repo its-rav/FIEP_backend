@@ -9,5 +9,6 @@ namespace BusinessTier.Request
 {
     public class GetPostsRequest : FilterParametersRequest<PostFields>, IRequest<ResponseBase>
     {
-	}
+        public string Query { get; set; } = "";
+    }
 }
