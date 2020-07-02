@@ -19,11 +19,10 @@ namespace FIEP_API.Controllers
         {
             _mediator = mediator;
         }
-        [HttpPut("{CommentID}")]
-        public async Task<ActionResult> UpdateComment([FromRoute]Guid CommentID,[FromBody]UpdateOrDeleteCommentRequest request)
+        [HttpPatch("{CommentID}")]
+        public async Task<ActionResult> UpdateComment([FromRoute]Guid CommentID,[FromBody]UpdateCommentRequest request)
         {
             request.setCommentId(CommentID);
-            request.setIsUpdate(true);
             var result = await _mediator.Send(request);
             if (result.Response == 0)
             {
@@ -31,12 +30,9 @@ namespace FIEP_API.Controllers
             }
             return Ok();
         }
-        [HttpDelete("{CommentID}")]
-        public async Task<ActionResult> DeleteComment([FromRoute]Guid CommentID)
+        [HttpDelete("{CommentId}")]
+        public async Task<ActionResult> DeleteComment([FromRoute]DeleteCommentRequest request)
         {
-            UpdateOrDeleteCommentRequest request = new UpdateOrDeleteCommentRequest();
-            request.setCommentId(CommentID);
-            request.setIsUpdate(false);
             var result = await _mediator.Send(request);
             if (result.Response == 0)
             {
