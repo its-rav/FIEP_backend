@@ -23,7 +23,7 @@ namespace FIEP_API.Middlewares
         private readonly IUnitOfWork _unitOfWork;
         private bool CachingEnabled => _cachingEnabled;
 
-        public UpdateRedisAndSheetMiddleware(RequestDelegate next, ICacheStore cacheStore, IUnitOfWork unitOfWork)
+        public UpdateRedisAndSheetMiddleware(RequestDelegate next,ICacheStore cacheStore, IUnitOfWork unitOfWork)
         {
             _next = next;
             _cacheStore = cacheStore;
@@ -32,8 +32,8 @@ namespace FIEP_API.Middlewares
         }
 
         public async Task Invoke(HttpContext httpContext)
-        {
-            //cache event table data
+        {  
+            //cache event for the first time
             if(!_cacheStore.IsExist(eventCacheKey))
             {
                 List<Event> events = new List<Event>();
@@ -52,7 +52,7 @@ namespace FIEP_API.Middlewares
                         CreateDate = item.CreateDate,
                         ModifyDate = item.ModifyDate,
                         IsExpired = item.IsExpired,
-                        IsDeleted = item.IsDeleted,                     
+                        IsDeleted = item.IsDeleted,
                     };
                     foreach (var eventSub in item.EventSubscription)
                     {
@@ -68,7 +68,7 @@ namespace FIEP_API.Middlewares
                 IQueryable<Event> eventTable = events.Select(x => x).AsQueryable<Event>();
                 _cacheStore.Add(eventCacheKey, events);
             }
-            //cache group table data
+            //cache group for the first time
             if (!_cacheStore.IsExist(groupCacheKey))
             {
                 List<GroupInformation> groups = new List<GroupInformation>();
@@ -83,7 +83,7 @@ namespace FIEP_API.Middlewares
                         GroupId = item.GroupId,
                         CreateDate = item.CreateDate,
                         ModifyDate = item.ModifyDate,
-                        IsDeleted = item.IsDeleted,                      
+                        IsDeleted = item.IsDeleted,
                     };
                     foreach (var eventSub in item.GroupSubscription)
                     {
@@ -100,21 +100,13 @@ namespace FIEP_API.Middlewares
                 _cacheStore.Add(groupCacheKey, groups);
             }
 
+
             await _next(httpContext);
 
             if (!httpContext.Request.Method.Equals("GET") && httpContext.Response.StatusCode == 200)
             {
                 //update sheet data after update, insert or delete
                 new GoogleSheetApiUtils(_unitOfWork).UpdateDataToSheet();
-                var path = httpContext.Request.Path.ToString();
-                if(path.Contains("Events") || path.Contains("EventSubscription"))
-                {
-                    _cacheStore.Remove(eventCacheKey);
-                }
-                if (path.Contains("Groups") || path.Contains("GroupSubscription"))
-                {
-                    _cacheStore.Remove(groupCacheKey);
-                }
             }
 
         }
@@ -128,4 +120,6 @@ namespace FIEP_API.Middlewares
             return builder.UseMiddleware<UpdateRedisAndSheetMiddleware>();
         }
     }
+
+
 }
