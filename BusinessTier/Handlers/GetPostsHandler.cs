@@ -26,9 +26,29 @@ namespace BusinessTier.Handlers
         public async Task<ResponseBase> Handle(GetPostsRequest request, CancellationToken cancellationToken)
         {
             IQueryable<Post> listPostsAfterSearch;
-            
+
             listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
-            
+            if (request.Query != null)
+            {
+                if(request.Query.Trim().Length > 0)
+                {
+                    listPostsAfterSearch = listPostsAfterSearch.Where(x => x.PostContent.Contains(request.Query));
+                    if (listPostsAfterSearch.Count() <= 0)
+                    {
+                        return new ResponseBase()
+                        {
+                            Response = 0
+                        };
+                    }
+                }                
+            }
+            if (listPostsAfterSearch.Count() <= 0)
+            {
+                return new ResponseBase()
+                {
+                    Response = 0
+                };
+            }
             //apply paging
             var listPostsAfterPaging = listPostsAfterSearch
                .Skip((request.PageNumber - 1) * request.PageSize)
