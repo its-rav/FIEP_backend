@@ -37,11 +37,20 @@ namespace BusinessTier.Handlers
             {
                 listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey);
             }
-
-            if (request.Query.Length > 0)
+            if (request.Query != null)
             {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query)).ToList();
-            }
+                if (request.Query.Trim().Length > 0)
+                {
+                    listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query.Trim())).ToList();
+                    if (listEventAfterFilter.Count() <= 0)
+                    {
+                        return new ResponseBase()
+                        {
+                            Response = null
+                        };
+                    }
+                }
+            }            
 
             //apply filter
             if (request.ApproveState != 2)
