@@ -1,5 +1,7 @@
-﻿using BusinessTier.Request;
+﻿using BusinessTier.DistributedCache;
+using BusinessTier.Request;
 using BusinessTier.Response;
+using BusinessTier.Services;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
@@ -13,10 +15,17 @@ namespace BusinessTier.Handlers
 {
     public class CreateGroupHandler : IRequestHandler<CreateGroupRequest, ResponseBase>
     {
+        private readonly IRedisCacheService _redis;
         private readonly IUnitOfWork _unitOfWork;
-        public CreateGroupHandler(IUnitOfWork unitOfWork)
+        private readonly ICacheStore _cacheStore;
+        private readonly bool _cachingEnabled = false;
+        private bool CachingEnabled => _cachingEnabled;
+        public CreateGroupHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore, IRedisCacheService redis)
         {
             _unitOfWork = unitOfWork;
+            _cacheStore = cacheStore;
+            _cachingEnabled = cacheStore != null;
+            _redis = redis;
         }
 
         public async Task<ResponseBase> Handle(CreateGroupRequest request, CancellationToken cancellationToken)
@@ -37,7 +46,11 @@ namespace BusinessTier.Handlers
                 SubscriptionType = 2,
             };
             _unitOfWork.Repository<GroupSubscription>().Insert(newGroupSub);
-            _unitOfWork.Commit();
+            var flag = _unitOfWork.Commit();
+            if (flag != 0 && CachingEnabled)
+            {
+                _redis.CacheGroupTable();
+            }
             return new ResponseBase()
             {
                 Response = 1

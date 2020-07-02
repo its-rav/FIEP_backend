@@ -76,6 +76,7 @@ namespace FIEP_API
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.RegisterType<RedisCacheService>().As<IRedisCacheService>();
             builder.UseCaching<ApplyCache>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

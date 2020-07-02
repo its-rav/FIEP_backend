@@ -1,5 +1,7 @@
-﻿using BusinessTier.Request;
+﻿using BusinessTier.DistributedCache;
+using BusinessTier.Request;
 using BusinessTier.Response;
+using BusinessTier.Services;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
@@ -13,10 +15,17 @@ namespace BusinessTier.Handlers
 {
     public class DeleteGroupHandler : IRequestHandler<DeleteGroupRequest,ResponseBase>
     {
+        private readonly IRedisCacheService _redis;
         private readonly IUnitOfWork _unitOfWork;
-        public DeleteGroupHandler(IUnitOfWork unitOfWork)
+        private readonly ICacheStore _cacheStore;
+        private readonly bool _cachingEnabled = false;
+        private bool CachingEnabled => _cachingEnabled;
+        public DeleteGroupHandler(IUnitOfWork unitOfWork, ICacheStore cacheStore, IRedisCacheService redis)
         {
             _unitOfWork = unitOfWork;
+            _cacheStore = cacheStore;
+            _cachingEnabled = cacheStore != null;
+            _redis = redis;
         }
         public async Task<ResponseBase> Handle(DeleteGroupRequest request, CancellationToken cancellationToken)
         {
@@ -30,7 +39,11 @@ namespace BusinessTier.Handlers
             }
             existingGroup.IsDeleted = true;
             _unitOfWork.Repository<GroupInformation>().Update(existingGroup);
-            _unitOfWork.Commit();
+            var result =  _unitOfWork.Commit();
+            if (result != 0 && CachingEnabled)
+            {
+                _redis.CacheGroupTable();
+            }
             return new ResponseBase()
             {
                 Response = 1
