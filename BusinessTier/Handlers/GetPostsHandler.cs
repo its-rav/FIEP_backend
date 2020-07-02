@@ -32,7 +32,7 @@ namespace BusinessTier.Handlers
             {
                 if(request.Query.Trim().Length > 0)
                 {
-                    listPostsAfterSearch = listPostsAfterSearch.Where(x => x.PostContent.Contains(request.Query));
+                    listPostsAfterSearch = listPostsAfterSearch.Where(x => x.PostContent.Contains(request.Query.Trim()));
                     if (listPostsAfterSearch.Count() <= 0)
                     {
                         return new ResponseBase()
