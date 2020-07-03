@@ -5,6 +5,7 @@ using BusinessTier.Services;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,7 +31,16 @@ namespace BusinessTier.Handlers
 
         public async Task<ResponseBase> Handle(UpdateGroupSubRequest request, CancellationToken cancellationToken)
         {
-            if (request.patchDoc != null)
+            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            if(request.SubscriptionType == 0)
+            {
+                return new ResponseBase()
+                {
+                    Response = 0
+                };
+            }
+            patchDoc.Replace("SubscriptionType", request.SubscriptionType);
+            if (patchDoc != null)
             {
                 var existingGroupSub = _unitOfWork.Repository<GroupSubscription>().FindFirstByProperty(x => x.GroupId == request.getGroupId() 
                                                                                                         && x.UserId == request.getUserId() && x.IsDeleted == false);
@@ -42,7 +52,7 @@ namespace BusinessTier.Handlers
                         Response = 0
                     };
                 }
-                request.patchDoc.ApplyTo(existingGroupSub);
+                patchDoc.ApplyTo(existingGroupSub);
                 var result =  _unitOfWork.Commit();
                 if (result != 0 && CachingEnabled)
                 {

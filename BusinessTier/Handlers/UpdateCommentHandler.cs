@@ -3,6 +3,7 @@ using BusinessTier.Response;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,7 +22,9 @@ namespace BusinessTier.Handlers
 
         public async Task<ResponseBase> Handle(UpdateCommentRequest request, CancellationToken cancellationToken)
         {
-            if (request.patchDoc != null)
+            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            patchDoc.Replace("Content", request.Content);
+            if (patchDoc != null)
             {
                 var existingComment = _unitOfWork.Repository<Comment>().FindFirstByProperty(x => Guid.Parse(x.CommentId) == request.getCommentId() && x.IsDeleted == false);
 
@@ -32,7 +35,7 @@ namespace BusinessTier.Handlers
                         Response = 0
                     };
                 }
-                request.patchDoc.ApplyTo(existingComment);
+                patchDoc.ApplyTo(existingComment);
                 _unitOfWork.Commit();
                 return new ResponseBase()
                 {

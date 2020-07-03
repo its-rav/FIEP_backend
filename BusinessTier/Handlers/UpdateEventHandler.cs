@@ -5,6 +5,7 @@ using BusinessTier.Services;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,19 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(UpdateEventRequest request, CancellationToken cancellationToken)
         {
-            if(request.patchDoc != null)
+            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var newEvent = new Event()
+            {
+                EventName = request.EventName,
+                ImageUrl = request.EventImageUrl,
+                ApprovalState = request.ApprovalState,
+                Location = request.Location,
+                TimeOccur = request.TimeOccur,
+                GroupId = request.GroupId,
+                IsExpired = request.IsExpired
+            };
+            CopyValues<Event>(patchDoc, newEvent);
+            if (patchDoc != null)
             {
                 var existingEvent = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == request.getEventId() && x.IsDeleted == false);
 
@@ -41,7 +54,7 @@ namespace BusinessTier.Handlers
                         Response = 0
                     };
                 }
-                request.patchDoc.ApplyTo(existingEvent);
+                patchDoc.ApplyTo(existingEvent);
                 int result = _unitOfWork.Commit();
                 if(result != 0 && CachingEnabled)
                 {
@@ -60,6 +73,29 @@ namespace BusinessTier.Handlers
                 };
             }
         }
-        
+
+        public void CopyValues<T>(JsonPatchDocument patchDoc, T source)
+        {
+            Type t = typeof(T);
+
+            var properties = t.GetProperties().Where(prop => prop.CanRead && prop.CanWrite);
+
+            foreach (var prop in properties)
+            {
+                var value = prop.GetValue(source, null);
+                if (value != null && !prop.Name.Contains("EventId"))
+                {
+                    if (prop.Name.Contains("GroupId") && (int)prop.GetValue(source, null) != 0)
+                    {
+                        patchDoc.Replace(prop.Name, value);
+                    }
+                    else if (!prop.Name.Contains("GroupId"))
+                    {
+                        patchDoc.Replace(prop.Name, value);
+                    }
+                }
+            }
+        }
+
     }
 }

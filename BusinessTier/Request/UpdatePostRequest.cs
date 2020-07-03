@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class UpdatePostRequest : UpdateBaseRequest<Post>,IRequest<ResponseBase>
+    public class UpdatePostRequest : IRequest<ResponseBase>
     {
         private Guid PostId { get; set; }
         public void setPostId(Guid id)
@@ -18,5 +18,7 @@ namespace BusinessTier.Request
         {
             return PostId;
         }
+        public string PostContent { get; set; }
+        public string ImageUrl { get; set; }
     }
 }
