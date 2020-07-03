@@ -38,6 +38,17 @@ namespace FIEP_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //cors
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
+            });
             //sql connection
             services.AddMonitoringServicesDBConfiguration(Configuration);
             services.AddDistributedRedisCache(option =>
@@ -60,14 +71,7 @@ namespace FIEP_API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin();
-                    });
-            });
+            
             //regist handlers
             services.RegisterHandlers();
 
@@ -113,11 +117,11 @@ namespace FIEP_API
             }
 
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseCors(MyAllowSpecificOrigins);
+
+            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
