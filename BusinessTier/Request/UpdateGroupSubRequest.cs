@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class UpdateGroupSubRequest : UpdateBaseRequest<GroupSubscription>,IRequest<ResponseBase>
+    public class UpdateGroupSubRequest : IRequest<ResponseBase>
     {
         private int GroupId { get; set; }
         private Guid UserId { get; set; }
@@ -27,5 +27,6 @@ namespace BusinessTier.Request
         {
             return UserId;
         }
+        public int SubscriptionType { get; set; }
     }
 }

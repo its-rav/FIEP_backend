@@ -7,7 +7,7 @@ using System.Text;
 
 namespace BusinessTier.Request
 {
-    public class UpdateCommentRequest : UpdateBaseRequest<Comment>,IRequest<ResponseBase>
+    public class UpdateCommentRequest : IRequest<ResponseBase>
     {
         private Guid CommentId { get; set; }
         public void setCommentId(Guid id)
@@ -18,5 +18,6 @@ namespace BusinessTier.Request
         {
             return CommentId;
         }
+        public string Content { get; set; }
     }
 }

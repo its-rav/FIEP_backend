@@ -3,6 +3,7 @@ using BusinessTier.Response;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,14 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(UpdatePostRequest request, CancellationToken cancellationToken)
         {
-            if (request.patchDoc != null)
+            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var newPost = new Post()
+            {
+                PostContent = request.PostContent,
+                ImageUrl = request.ImageUrl
+            };
+            CopyValues<Post>(patchDoc, newPost);
+            if (patchDoc != null)
             {
                 var existingPost = _unitOfWork.Repository<Post>().FindFirstByProperty(x => x.PostId == request.getPostId() && x.IsDeleted == false);
 
@@ -32,7 +40,7 @@ namespace BusinessTier.Handlers
                         Response = 0
                     };
                 }
-                request.patchDoc.ApplyTo(existingPost);
+                patchDoc.ApplyTo(existingPost);
                 _unitOfWork.Commit();
                 return new ResponseBase()
                 {
@@ -47,6 +55,20 @@ namespace BusinessTier.Handlers
                 };
             }
         }
-      
+        public void CopyValues<T>(JsonPatchDocument patchDoc, T source)
+        {
+            Type t = typeof(T);
+
+            var properties = t.GetProperties().Where(prop => prop.CanRead && prop.CanWrite);
+
+            foreach (var prop in properties)
+            {
+                var value = prop.GetValue(source, null);
+                if (value != null && !prop.Name.Contains("Id"))
+                {
+                    patchDoc.Replace(prop.Name, value);
+                }
+            }
+        }
     }
 }

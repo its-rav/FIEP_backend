@@ -5,6 +5,7 @@ using BusinessTier.Services;
 using DataTier.Models;
 using DataTier.UOW;
 using MediatR;
+using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,14 @@ namespace BusinessTier.Handlers
         }
         public async Task<ResponseBase> Handle(UpdateGroupRequest request, CancellationToken cancellationToken)
         {
-            if(request.patchDoc != null)
+            JsonPatchDocument patchDoc = new JsonPatchDocument();
+            var newGroup = new GroupInformation()
+            {
+                GroupName = request.GroupName,
+                GroupImageUrl = request.ImageUrl
+            };
+            CopyValues<GroupInformation>(patchDoc, newGroup);
+            if (patchDoc != null)
             {
                 var existingGroup = _unitOfWork.Repository<GroupInformation>().FindFirstByProperty(x => x.GroupId == request.getGroupId() && x.IsDeleted == false);
 
@@ -41,7 +49,7 @@ namespace BusinessTier.Handlers
                         Response = 0
                     };
                 }
-                request.patchDoc.ApplyTo(existingGroup);
+                patchDoc.ApplyTo(existingGroup);
                 var result =_unitOfWork.Commit();
                 if (result != 0 && CachingEnabled)
                 {
@@ -60,6 +68,21 @@ namespace BusinessTier.Handlers
                 };
             }
         }
-       
+
+        public void CopyValues<T>(JsonPatchDocument patchDoc, T source)
+        {
+            Type t = typeof(T);
+
+            var properties = t.GetProperties().Where(prop => prop.CanRead && prop.CanWrite);
+
+            foreach (var prop in properties)
+            {
+                var value = prop.GetValue(source, null);
+                if (value != null && !prop.Name.Contains("GroupId"))
+                {
+                    patchDoc.Replace(prop.Name, value);
+                }
+            }
+        }
     }
 }
