@@ -24,7 +24,28 @@ namespace FIEP_API.Controllers
             _unitOfWork = unitOfWork;
             _mediator = mediator;
         }
+        [HttpGet("{UserId}/EventSubscriptions")]
+        public async Task<ActionResult> GetEventSubsOfUser([FromRoute] GetEventSubsByUserIdRequest request)
+        {
+            var result = await _mediator.Send(request);
 
+            if (result.Response == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result.Response);
+        }
+        [HttpGet("{UserId}/GroupSubscriptions")]
+        public async Task<ActionResult> GetGroupSubsOfUser([FromRoute] GetGroupSubsByUserIdRequest request)
+        {
+            var result = await _mediator.Send(request);
+
+            if (result.Response == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result.Response);
+        }
         [HttpGet]
         public async Task<ActionResult> GetUsers([FromQuery] GetUsersRequest request)
         {
