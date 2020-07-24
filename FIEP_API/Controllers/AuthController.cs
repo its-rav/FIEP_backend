@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using BusinessTier.DTO;
 using BusinessTier.Request;
 using DataTier.Models;
 using DataTier.Repository;
@@ -59,6 +60,7 @@ namespace FIEP_API.Controllers
 
             string indentity = "";
             int roleId;
+            UserDTO userToResponse;
             if (existingStudent == null)
             {
                 UserInformation newUser = new UserInformation()
@@ -69,6 +71,14 @@ namespace FIEP_API.Controllers
                     Fullname = userFullName,
                     IsDeleted = false,
                     CreateDate = DateTime.Now
+                };
+                //get info to response
+                userToResponse = new UserDTO()
+                {
+                    UserId = newUser.UserId,
+                    //AvatarUrl = newUser.AvatarUrl,
+                    FullName = newUser.Fullname,
+                    Mail = newUser.Email
                 };
                 _unitOfWork.Repository<UserInformation>().Insert(newUser);
                 if (!fcmToken.Equals(""))
@@ -93,6 +103,13 @@ namespace FIEP_API.Controllers
             }
             else
             {
+                userToResponse = new UserDTO()
+                {
+                    UserId = existingStudent.UserId,
+                    //AvatarUrl = existingStudent.AvatarUrl,
+                    FullName = existingStudent.Fullname,
+                    Mail = existingStudent.Email
+                };
                 if (!fcmToken.Equals(""))
                 {
                     if (existingFCMToken == null)
@@ -133,7 +150,10 @@ namespace FIEP_API.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var result = tokenHandler.WriteToken(token);
-            return Ok(result);
+            return Ok(new { 
+                UserInfo = userToResponse,
+                Token = result
+            });
         }
     }
 }

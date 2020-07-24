@@ -212,7 +212,7 @@ namespace BusinessTier.Utilities
                 int followers = _unitOfWork.Repository<GroupSubscription>().FindAllByProperty(x => x.GroupId == group.GroupId).Count();
 
                 var eventRepo = _unitOfWork.Repository<Event>();
-                int activeEventsCount = eventRepo.FindAllByProperty(x => x.GroupId == group.GroupId && x.IsExpired==true).Count();
+                int activeEventsCount = eventRepo.FindAllByProperty(x => x.GroupId == group.GroupId && x.IsExpired==false).Count();
                 int eventsCount = eventRepo.FindAllByProperty(x => x.GroupId == group.GroupId).Count();
 
                 result.Add(new GroupStatisticDTO()
