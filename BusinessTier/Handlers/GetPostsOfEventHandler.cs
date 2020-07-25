@@ -26,7 +26,7 @@ namespace BusinessTier.Handlers
         public async Task<ResponseBase> Handle(GetPostsOfEventRequest request, CancellationToken cancellationToken)
         {
             IQueryable<Post> listPostsAfterSearch;
-            if (request.GetEventId() == null)
+            if (request.GetEventId() == 0)
             {
                 return new ResponseBase()
                 {
@@ -41,10 +41,6 @@ namespace BusinessTier.Handlers
                         Response = null
                     };
                 }
-            else
-            {
-                listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
-            }
             //apply paging
             var listPostsAfterPaging = listPostsAfterSearch
                .Skip((request.PageNumber - 1) * request.PageSize)
