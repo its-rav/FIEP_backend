@@ -53,6 +53,7 @@ namespace FIEP_API.Middlewares
                         ModifyDate = item.ModifyDate,
                         IsExpired = item.IsExpired,
                         IsDeleted = item.IsDeleted,
+                        ImageUrl = item.ImageUrl
                     };
                     foreach (var eventSub in item.EventSubscription)
                     {

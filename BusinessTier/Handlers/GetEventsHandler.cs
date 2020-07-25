@@ -35,7 +35,7 @@ namespace BusinessTier.Handlers
             }
             else
             {
-                listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey);
+                listEventAfterFilter = _cacheStore.Get<List<Event>>(eventCacheKey).Where(x => x.IsDeleted == false).ToList();
             }
             if (request.Query != null)
             {
