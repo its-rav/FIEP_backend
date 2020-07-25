@@ -54,7 +54,8 @@ namespace BusinessTier.Services
                     {
                         EventSubscription eventSubscription = new EventSubscription()
                         {
-                            UserId = eventSub.UserId
+                            UserId = eventSub.UserId,
+                            IsDeleted = eventSub.IsDeleted
                         };
                         subs.Add(eventSubscription);
                     }
@@ -92,7 +93,8 @@ namespace BusinessTier.Services
                     {
                         GroupSubscription groupSubscription = new GroupSubscription()
                         {
-                            UserId = eventSub.UserId
+                            UserId = eventSub.UserId,
+                            IsDeleted = eventSub.IsDeleted
                         };
                         subs.Add(groupSubscription);
                     }
