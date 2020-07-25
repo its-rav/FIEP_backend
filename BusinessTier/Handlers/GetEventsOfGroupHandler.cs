@@ -29,7 +29,7 @@ namespace BusinessTier.Handlers
         public async Task<ResponseBase> Handle(GetEventsOfGroupRequest request, CancellationToken cancellationToken)
         {
             List<Event> listEventAfterFilter;
-            if (request.GetGroupId() == null)
+            if (request.GetGroupId() == 0)
             {
                 return new ResponseBase()
                 {
@@ -51,10 +51,7 @@ namespace BusinessTier.Handlers
                     Response = null
                 };
             }
-            else
-            {
-                listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false).ToList();
-            }
+
             if(request.Query != null)
             {
                 if (request.Query.Trim().Length > 0)
