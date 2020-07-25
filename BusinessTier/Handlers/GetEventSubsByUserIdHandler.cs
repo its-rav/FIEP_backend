@@ -22,7 +22,7 @@ namespace BusinessTier.Handlers
 
         public async Task<ResponseBase> Handle(GetEventSubsByUserIdRequest request, CancellationToken cancellationToken)
         {
-            var listOfEventSubs = _unitOfWork.Repository<EventSubscription>().FindAllByProperty(x => x.UserId == request.UserId);
+            var listOfEventSubs = _unitOfWork.Repository<EventSubscription>().FindAllByProperty(x => x.UserId == request.UserId && x.IsDeleted == false);
             if(!listOfEventSubs.Any())
             {
                 return new ResponseBase()
