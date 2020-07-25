@@ -9,7 +9,6 @@ namespace DataTier.Models
         {
             Comment = new HashSet<Comment>();
             EventSubscription = new HashSet<EventSubscription>();
-            GroupInformation = new HashSet<GroupInformation>();
             GroupSubscription = new HashSet<GroupSubscription>();
             FCMToken = new HashSet<UserFCMToken>();
         }
@@ -26,7 +25,6 @@ namespace DataTier.Models
         public virtual Role Role { get; set; }
         public virtual ICollection<Comment> Comment { get; set; }
         public virtual ICollection<EventSubscription> EventSubscription { get; set; }
-        public virtual ICollection<GroupInformation> GroupInformation { get; set; }
         public virtual ICollection<GroupSubscription> GroupSubscription { get; set; }
         public virtual ICollection<UserFCMToken> FCMToken { get; set; }
     }

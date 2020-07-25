@@ -6,9 +6,11 @@ using BusinessTier.DistributedCache;
 using BusinessTier.DTO;
 using BusinessTier.Fields;
 using BusinessTier.Request;
-using BusinessTier.ServiceWorkers;
+using BusinessTier.Response;
+using BusinessTier.Services;
 using DataTier.Models;
 using DataTier.UOW;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,212 +21,89 @@ namespace FIEP_API.Controllers
     public class EventsController : ControllerBase
     {
         private readonly ICacheStore _cacheStore;
-        private IUnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private NotificationPublisher _notificationPublisher;
-        public EventsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher)
+        private readonly IMediator _mediator;
+        public EventsController(IUnitOfWork unitOfWork, ICacheStore cacheStore, NotificationPublisher notificationPublisher, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
             _cacheStore = cacheStore;
             _notificationPublisher = notificationPublisher;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public ActionResult GetEvents([FromQuery]GetEventsRequest request)
-        {           
-            var listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false);
-            if (request.Query.Length > 0)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query));
-            }
-            //apply filter
-            if (request.ApproveState != 2)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => x.ApprovalState == request.ApproveState);
-            }
-            if(request.IsUpComming)
-            {
-                listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now);
-            }
-            //apply paging
-            var listEventsAfterPaging = listEventAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
-            //apply sort
-            var listEventsAfterSort = new List<Event>();
-            switch (request.Field)
-            {
-                case EventFields.TimeOccur: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.TimeOccur).ToList();
-                    }
-                    else
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.TimeOccur).ToList();
-                    }
-                    break;
-                case EventFields.Follower: //sort by number of follower
-                    if (request.isDesc)
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Count).ToList();
-                    }
-                    else
-                    {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Count).ToList();
-                    }
-                    break;
-            }
-
-            var listOfEvents = new List<dynamic>();
-            foreach (var item in listEventsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var eventObj = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName
-                        };
-
-                        listOfEvents.Add(eventObj);
-                        break;
-                    case "medium":
-                        var eventObjm = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
-                            timeOccur = item.TimeOccur,
-                            location = item.Location
-                        };
-                        listOfEvents.Add(eventObjm);
-                        break;
-                    default:
-                        var eventObjl = new
-                        {
-                            eventID = item.EventId,
-                            eventName = item.EventName,
-                            imageUrl = item.ImageUrl,
-                            timeOccur = item.TimeOccur,
-                            location = item.Location,
-                            groupID = item.GroupId,
-                            createDate = item.CreateDate,
-                            approveState = item.ApprovalState
-                        };
-
-                        listOfEvents.Add(eventObjl);
-                        break;
-                }
-            }
-            return Ok(new {
-                data = listOfEvents,
-                totalPages = Math.Ceiling((double)listEventAfterFilter.ToList().Count/request.PageSize)
-            });
-        }
-        [HttpGet("{id}")]
-        public ActionResult GetEvent(int id)
+        public async Task<ActionResult> GetEvents([FromQuery]GetEventsRequest request)
         {
-            var result = _unitOfWork.Repository<Event>().FindFirstByProperty(x => x.EventId == id && x.IsDeleted == false);
-            EventDTO eventDTO = new EventDTO()
+
+            var result = await _mediator.Send(request);
+
+            if (result.Response == null)
             {
-                EventId = result.EventId,
-                EventName = result.EventName,
-                EventImageUrl = result.ImageUrl,
-                TimeOccur = (DateTime)result.TimeOccur
-            };
-            return Ok(eventDTO);
+                return BadRequest();
+            }
+            return Ok(result.Response);
+        }
+
+        [HttpGet("{EventId}")]
+        public async Task<ActionResult> GetEvent([FromRoute] GetEventByIdRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if(result.Response == null)
+            {
+                return BadRequest();
+            }
+            return Ok(result.Response);
         }
 
         [HttpGet("{eventID}/posts")]
-        public ActionResult GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsRequest request)
+        public async Task<ActionResult> GetPostsOfEvent([FromRoute]int eventID,[FromQuery]GetPostsOfEventRequest request)
         {
-            var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.EventId == eventID && x.IsDeleted == false);
-            //apply paging
-            var listPostsAfterPaging = listPostsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
-
-            //apply sort
-            var listPostsAfterSort = new List<Post>();
-            switch (request.Field)
+            request.SetEventId(eventID);
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                case PostFields.CreateDate: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
-                    }
-                    else
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderBy(x => x.CreateDate).ToList();
-                    }
-                    break;
+                return BadRequest();
             }
-
-            var listOfPosts = new List<dynamic>();
-            foreach (var item in listPostsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var postObj = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent
-                        };
-
-                        listOfPosts.Add(postObj);
-                        break;
-                    case "medium":
-                        var postObjm = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate
-                        };
-                        listOfPosts.Add(postObjm);
-                        break;
-                    default:
-                        var postObjl = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate,
-                            eventId = item.EventId
-                        };
-
-                        listOfPosts.Add(postObjl);
-                        break;
-                }
-            }
-            return Ok(new
-            {
-                data = listOfPosts,
-                totalPages = Math.Ceiling((double)listPostsAfterSearch.ToList().Count / request.PageSize)
-            });
+            return Ok(result.Response);
         }
 
         [HttpPut("{eventID}/notification")]
-        public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateNotificationRequest request)
+        public async Task<ActionResult> CreatePushNotification([FromRoute] int eventID, [FromBody] CreateEventNotificationRequest request)
         {
-            DataTier.Models.Notification notification = new DataTier.Models.Notification()
+            request.SetEventId(eventID);
+            await _mediator.Send(request);
+            return Ok();
+        }
+        [HttpPatch("{eventID}")]
+        public async Task<ActionResult> UpdateEvent([FromRoute]int eventID,[FromBody]UpdateEventRequest request)
+        {
+            request.setEventId(eventID);
+            var result = await _mediator.Send(request);
+            if(result.Response == 0)
             {
-                NotificationID = new Guid(),
-                Body = request.Body,
-                Title = request.Title,
-                ImageUrl = request.ImageUrl,
-                EventId = eventID
-            };
-            _unitOfWork.Repository<DataTier.Models.Notification>().Insert(notification);
-
-            _unitOfWork.Commit();
-            //add to redis
-            _notificationPublisher.Publish(notification.NotificationID.ToString());
-
+                return BadRequest();
+            }
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreateEvent([FromBody]CreateEventRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+        [HttpDelete("{EventId}")]
+        public async Task<ActionResult> DeleteEvent([FromRoute]DeleteEventRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
             return Ok();
         }
     }

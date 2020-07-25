@@ -7,6 +7,6 @@ namespace BusinessTier.Request
     public class AuthRequest
     {
         public string idToken { get; set; }
-        public string fcmToken { get; set; }
+        public string fcmToken { get; set; } = null;
     }
 }

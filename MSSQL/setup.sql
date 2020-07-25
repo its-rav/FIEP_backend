@@ -33,8 +33,6 @@ CREATE table UserFCMToken(
 CREATE TABLE GroupInformation (
 	GroupID INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,
 	GroupImageUrl VARCHAR(256),
-	GroupManagerId UNIQUEIDENTIFIER NOT NULL,
-	FOREIGN KEY (GroupManagerId) REFERENCES UserInformation(UserID),
 	IsDeleted BIT DEFAULT 0 NOT NULL,
 	GroupName VARCHAR(128) NOT NULL,
 	CreateDate DATETIME DEFAULT GETDATE() ,
@@ -49,7 +47,8 @@ CREATE TABLE GroupSubscription (
 	CreateDate DATETIME DEFAULT GETDATE() ,
 	ModifyDate DATETIME DEFAULT GETDATE(),
 	IsDeleted BIT DEFAULT 0 NOT NULL,
-	PRIMARY KEY (GroupID,UserID)
+	PRIMARY KEY (GroupID,UserID),
+	SubscriptionType INT NOT NULL, --1 : sub follow, 2 : sub admin
 );
 
 CREATE TABLE ActivityType (
@@ -156,28 +155,28 @@ INSERT INTO UserInformation(UserID,RoleID,Email,Fullname,AvatarUrl)
 VALUES('daf78774-feb8-46ab-b8ab-de1439559ed8',3,'thanquocbinh@fpt.edu.vn','Thanh Quoc Binh','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/usericon.png?alt=media&token=4526116b-dc87-4d06-ae47-1d4fb730474c');
 
 --GroupInformation--
-INSERT INTO GroupInformation(GroupManagerId,GroupName,GroupImageUrl)
-VALUES('d6076f10-bed3-4d76-9745-120a3794e8f7','F-Code','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/f-code.jpg?alt=media&token=b09869eb-02aa-472a-bbb5-c46d7da0a833');
-INSERT INTO GroupInformation(GroupManagerId,GroupName,GroupImageUrl)
-VALUES('daf78774-feb8-46ab-b8ab-de1439559ed8','FPT Event Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fev.jpg?alt=media&token=83d059b9-e682-476e-874f-c807b92f13c2');
-INSERT INTO GroupInformation(GroupManagerId,GroupName,GroupImageUrl)
-VALUES('d6076f10-bed3-4d76-9745-120a3794e8f7','FPT Instrument Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fpt-Intrument.jpg?alt=media&token=8cda66dd-d818-442f-a614-c9efe71f0ca8');
-INSERT INTO GroupInformation(GroupManagerId,GroupName,GroupImageUrl)
-VALUES('daf78774-feb8-46ab-b8ab-de1439559ed8','FPT Chess Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/F-chess.png?alt=media&token=e2f88c71-98f7-41ca-a780-1e2c5508d057');
-INSERT INTO GroupInformation(GroupManagerId,GroupName,GroupImageUrl)
-VALUES('d6076f10-bed3-4d76-9745-120a3794e8f7','FPT Guitar Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fpt-guitar.jpg?alt=media&token=a40bc833-687e-4356-8f4d-0ba57add92f4');
-INSERT INTO GroupInformation(GroupManagerId,GroupName,GroupImageUrl)
-VALUES('daf78774-feb8-46ab-b8ab-de1439559ed8','Fpt Vovinam Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fpt-vovinam.jpg?alt=media&token=d46aa6b8-fab9-40bb-b753-9e82013b1801');
+INSERT INTO GroupInformation(GroupName,GroupImageUrl)
+VALUES('F-Code','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/f-code.jpg?alt=media&token=b09869eb-02aa-472a-bbb5-c46d7da0a833');
+INSERT INTO GroupInformation(GroupName,GroupImageUrl)
+VALUES('FPT Event Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fev.jpg?alt=media&token=83d059b9-e682-476e-874f-c807b92f13c2');
+INSERT INTO GroupInformation(GroupName,GroupImageUrl)
+VALUES('FPT Instrument Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fpt-Intrument.jpg?alt=media&token=8cda66dd-d818-442f-a614-c9efe71f0ca8');
+INSERT INTO GroupInformation(GroupName,GroupImageUrl)
+VALUES('FPT Chess Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/F-chess.png?alt=media&token=e2f88c71-98f7-41ca-a780-1e2c5508d057');
+INSERT INTO GroupInformation(GroupName,GroupImageUrl)
+VALUES('FPT Guitar Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fpt-guitar.jpg?alt=media&token=a40bc833-687e-4356-8f4d-0ba57add92f4');
+INSERT INTO GroupInformation(GroupName,GroupImageUrl)
+VALUES('Fpt Vovinam Club','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/fpt-vovinam.jpg?alt=media&token=d46aa6b8-fab9-40bb-b753-9e82013b1801');
 
 --GroupSubscription--
-INSERT INTO GroupSubscription(GroupID,UserID)
-VALUES(1,'1d8c8527-e1f4-4a77-85ee-68c15f927817');
-INSERT INTO GroupSubscription(GroupID,UserID)
-VALUES(2,'f90e94fa-6b29-4a5a-993c-94b153ef81b2');
-INSERT INTO GroupSubscription(GroupID,UserID)
-VALUES(2,'1d8c8527-e1f4-4a77-85ee-68c15f927817');
-INSERT INTO GroupSubscription(GroupID,UserID)
-VALUES(1,'daf78774-feb8-46ab-b8ab-de1439559ed8');
+INSERT INTO GroupSubscription(GroupID,UserID,SubscriptionType)
+VALUES(1,'1d8c8527-e1f4-4a77-85ee-68c15f927817',1);
+INSERT INTO GroupSubscription(GroupID,UserID,SubscriptionType)
+VALUES(2,'f90e94fa-6b29-4a5a-993c-94b153ef81b2',1);
+INSERT INTO GroupSubscription(GroupID,UserID,SubscriptionType)
+VALUES(2,'1d8c8527-e1f4-4a77-85ee-68c15f927817',1);
+INSERT INTO GroupSubscription(GroupID,UserID,SubscriptionType)
+VALUES(1,'daf78774-feb8-46ab-b8ab-de1439559ed8',2);
 
 --ActivityType--
 INSERT INTO ActivityType(ActivityTypeName)
@@ -190,18 +189,18 @@ INSERT INTO ActivityType(ActivityTypeName)
 VALUES('HACKATHON');
 
 --Event--
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(1,'ACM Contest','Hall Of FPT University', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-acm-fcode.png?alt=media&token=adfcf71c-10c8-48fa-a49a-f75b38572aab');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(3,'Tiktok conpetition','F-Tech Tower', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-tiktok-intrument.jpg?alt=media&token=3eec5742-57c7-429b-9832-4c1574d25969');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(2,'Club celebration','FSOFT-Town-1', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-daitho-fev.jpg?alt=media&token=336524d9-cd9d-4200-80ca-df75fabb32d2');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(5,'Guitar free style','FSOFT-Town-2', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-yongguitar-guitar.jpg?alt=media&token=726b0bee-b68a-463f-9a87-51bc6a6bdcfd');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(2,'Reduce plastic together','FSOFT-Town-3', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-plastic-fev.png?alt=media&token=0f72964b-c031-485b-a98d-ac01e31c3724');
-INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl)
-VALUES(6,'Martial art for women day','FPT Greenwich', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-womanday-vovinam.jpg?alt=media&token=e47a61a1-9c26-467a-9e78-eaeb0ff6378b');
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(1,'ACM Contest','Hall Of FPT University', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-acm-fcode.png?alt=media&token=adfcf71c-10c8-48fa-a49a-f75b38572aab',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(3,'Tiktok conpetition','F-Tech Tower', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-tiktok-intrument.jpg?alt=media&token=3eec5742-57c7-429b-9832-4c1574d25969',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(2,'Club celebration','FSOFT-Town-1', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-daitho-fev.jpg?alt=media&token=336524d9-cd9d-4200-80ca-df75fabb32d2',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(5,'Guitar free style','FSOFT-Town-2', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-yongguitar-guitar.jpg?alt=media&token=726b0bee-b68a-463f-9a87-51bc6a6bdcfd',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(2,'Reduce plastic together','FSOFT-Town-3', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-plastic-fev.png?alt=media&token=0f72964b-c031-485b-a98d-ac01e31c3724',1);
+INSERT INTO Event(GroupID,EventName,Location,TimeOccur,ImageUrl,ApprovalState)
+VALUES(6,'Martial art for women day','FPT Greenwich', '06-06-2020','https://firebasestorage.googleapis.com/v0/b/fiep-e6602.appspot.com/o/event-womanday-vovinam.jpg?alt=media&token=e47a61a1-9c26-467a-9e78-eaeb0ff6378b',1);
 
 --EventActivity--
 INSERT INTO EventActivity(EventID,ActivityTypeId,EventActivityDescription)
@@ -215,7 +214,7 @@ VALUES(3,4,'Try be the best of yourself');
 	
 --User FCM Tokens
 INSERT INTO UserFCMToken(UserID,FCMToken)
-VALUES('1d8c8527-e1f4-4a77-85ee-68c15f927817','frXcARq8TOCr5C7b3L0XcZ:APA91bHc2CB8zWiZOjmqV0QJPF6yj5ql3vLOlLODdzal7goM-L4qOXVFjmQ2DX59Z4Q8rguU8vAP7N74XiH2LSLvoyEPtiRtFZtBZWbVuSPukGCTjYpsk8G6JV9RNnJE4gl3qy4UCmF5');
+VALUES('1d8c8527-e1f4-4a77-85ee-68c15f927817','dK1pPIODQdC5w6Ww7d2uQi:APA91bGkkfiB8LUhPJFo7wybBUx6RFNdh3RcEgcjpCeVrxPUxGxKqribb8N6lQqYuMSMxmsobsxMTvci4aFeScm8D6mPEY9Yta1F7ppQ6cSziJCedHjDGwY9_z8g9IQxzatCbArBM1Ol');
 
 --EventSubscription--
 INSERT INTO EventSubscription(EventID,UserID)

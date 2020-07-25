@@ -5,7 +5,7 @@ using StackExchange.Redis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace BusinessTier.ServiceWorkers
+namespace BusinessTier.Services
 {
     public class NotificationPublisher
     {

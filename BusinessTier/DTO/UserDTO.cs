@@ -6,9 +6,9 @@ namespace BusinessTier.DTO
 {
     public class UserDTO
     {
-        public Guid Userid { get; set; }
+        public Guid UserId { get; set; }
         public string Mail { get; set; }
-        public string Name { get; set; }
-        public string AvatarUlr { get; set; }
+        public string FullName { get; set; }
+        public string AvatarUrl { get; set; }
     }
 }

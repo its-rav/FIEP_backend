@@ -7,6 +7,7 @@ using BusinessTier.Fields;
 using BusinessTier.Request;
 using DataTier.Models;
 using DataTier.UOW;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,166 +17,79 @@ namespace FIEP_API.Controllers
     [ApiController]
     public class PostsController : ControllerBase
     {
-        private IUnitOfWork _unitOfWork;
-        public PostsController(IUnitOfWork unitOfWork)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMediator _mediator;
+        public PostsController(IUnitOfWork unitOfWork, IMediator mediator)
         {
             _unitOfWork = unitOfWork;
+            _mediator = mediator;
         }
 
         [HttpGet]
-        public ActionResult GetPosts([FromQuery]GetPostsRequest request)
+        public async Task<ActionResult> GetPosts([FromQuery]GetPostsRequest request)
         {
-            var listPostsAfterSearch = _unitOfWork.Repository<Post>().FindAllByProperty(x => x.IsDeleted == false);
-            //apply paging
-            var listPostsAfterPaging = listPostsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
+            var result = await _mediator.Send(request);
 
-            //apply sort
-            var listPostsAfterSort = new List<Post>();
-            switch (request.Field)
+            if (result.Response == null)
             {
-                case PostFields.CreateDate: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
-                    }
-                    else
-                    {
-                        listPostsAfterSort = listPostsAfterPaging.OrderBy(x => x.CreateDate).ToList();
-                    }
-                    break;
+                return BadRequest();
             }
-
-            var listOfPosts = new List<dynamic>();
-            foreach (var item in listPostsAfterSort)
-            {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var postObj = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent
-                        };
-
-                        listOfPosts.Add(postObj);
-                        break;
-                    case "medium":
-                        var postObjm = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate
-                        };
-                        listOfPosts.Add(postObjm);
-                        break;
-                    default:
-                        var postObjl = new
-                        {
-                            postID = item.PostId,
-                            postContent = item.PostContent,
-                            imageUrl = item.ImageUrl,
-                            createDate = item.CreateDate,
-                            eventId = item.EventId
-                        };
-
-                        listOfPosts.Add(postObjl);
-                        break;
-                }
-            }
-            return Ok(new
-            {
-                data = listOfPosts,
-                totalPages = Math.Ceiling((double)listPostsAfterSearch.ToList().Count / request.PageSize)
-            });
+            return Ok(result.Response);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult GetPostById(Guid id)
+        [HttpGet("{PostId}")]
+        public async  Task<ActionResult> GetPostById([FromRoute]GetPostByIdRequest request)
         {
-            var result = _unitOfWork.Repository<Post>().FindFirstByProperty(x => x.PostId.Equals(id) && x.IsDeleted == false);
-            PostDTO postDTO = new PostDTO()
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                PostId = result.PostId,
-                PostContent = result.PostContent,
-                ImageUrl = result.ImageUrl
-            };
-            return Ok(postDTO);
+                return BadRequest();
+            }
+            return Ok(result.Response);
         }
 
 
         [HttpGet("{PostId}/comments")]
-        public ActionResult GetCommentsOfPost(Guid PostId,[FromQuery]GetCommentsRequest request)
+        public async Task<ActionResult> GetCommentsOfPost(Guid PostId,[FromQuery]GetCommentsOfPostRequest request)
         {
-            var listCommentsAfterSearch = _unitOfWork.Repository<Comment>().FindAllByProperty(x => x.PostId.Equals(PostId) && x.IsDeleted == false);
-            //apply paging
-            var listCommentsAfterPaging = listCommentsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
-
-            //apply sort
-            var listCommentsAfterSort = new List<Comment>();
-            switch (request.Field)
+            request.setPostID(PostId);
+            var result = await _mediator.Send(request);
+            if (result.Response == null)
             {
-                case CommentFields.CreateDate: //sort by time occur
-                    if (request.isDesc)
-                    {
-                        listCommentsAfterSort = listCommentsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
-                    }
-                    else
-                    {
-                        listCommentsAfterSort = listCommentsAfterPaging.OrderBy(x => x.CreateDate).ToList();
-                    }
-                    break;
+                return BadRequest();
             }
-
-            var listOfComments = new List<dynamic>();
-            foreach (var item in listCommentsAfterSort)
+            return Ok(result.Response);           
+        }
+        [HttpPatch("{postId}")]
+        public async Task<ActionResult> UpdatePost([FromRoute]Guid postId, [FromBody]UpdatePostRequest request)
+        {
+            request.setPostId(postId);
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
             {
-                switch (request.FieldSize)
-                {
-                    case "short":
-                        var commentObj = new
-                        {
-                            commentId = item.CommentId,
-                            commentContent = item.Content
-                        };
-
-                        listOfComments.Add(commentObj);
-                        break;
-                    case "medium":
-                        var commentObjm = new
-                        {
-                            commentId = item.CommentId,
-                            commentContent = item.Content,
-                            postId = item.PostId,
-                            userId = item.CommentOwnerId
-                        };
-                        listOfComments.Add(commentObjm);
-                        break;
-                    default:
-                        var commentObjl = new
-                        {
-                            commentId = item.CommentId,
-                            commentContent = item.Content,
-                            postId = item.PostId,
-                            userId = item.CommentOwnerId,
-                            createDate = item.CreateDate
-                        };
-
-                        listOfComments.Add(commentObjl);
-                        break;
-                }
+                return BadRequest();
             }
-            return Ok(new
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreatePost([FromBody]CreatePostRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
             {
-                data = listOfComments,
-                totalPages = Math.Ceiling((double)listCommentsAfterSearch.ToList().Count / request.PageSize)
-            });
+                return BadRequest();
+            }
+            return Ok();
+        }
+        [HttpDelete("{PostId}")]
+        public async Task<ActionResult> DeletePost([FromRoute]DeletePostRequest request)
+        {
+            var result = await _mediator.Send(request);
+            if (result.Response == 0)
+            {
+                return BadRequest();
+            }
+            return Ok();
         }
     }
 }

@@ -20,8 +20,8 @@ using Microsoft.OpenApi.Models;
 using System.IO;
 using Newtonsoft.Json;
 using BusinessTier.DistributedCache;
-using BusinessTier.ServiceWorkers;
-using Microsoft.Extensions.DependencyInjection;
+using BusinessTier.Services;
+using FIEP_API.Middlewares;
 
 namespace FIEP_API
 {
@@ -38,6 +38,17 @@ namespace FIEP_API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //cors
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
+            });
             //sql connection
             services.AddMonitoringServicesDBConfiguration(Configuration);
             services.AddDistributedRedisCache(option =>
@@ -60,21 +71,16 @@ namespace FIEP_API
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    builder =>
-                    {
-                        builder.AllowAnyOrigin();
-                    });
-            });
-
+            
+            //regist handlers
+            services.RegisterHandlers();
 
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void ConfigureContainer(ContainerBuilder builder)
         {
             builder.RegisterType<UnitOfWork>().As<IUnitOfWork>();
+            builder.RegisterType<RedisCacheService>().As<IRedisCacheService>();
             builder.UseCaching<ApplyCache>();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -90,6 +96,10 @@ namespace FIEP_API
                 //To serve the Swagger UI at the app's root (http://localhost:<port>/), set the RoutePrefix property to an empty string
                 c.RoutePrefix = string.Empty;
             });
+
+            //middleware
+            //app.UseAuthorizationMiddleware();
+            app.UseUpdateRedisAndSheetMiddleware();
 
             var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "firebase-fiep-private-key.json");
             FirebaseApp.Create(new AppOptions
@@ -107,11 +117,11 @@ namespace FIEP_API
             }
 
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseCors(MyAllowSpecificOrigins);
+
+            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
