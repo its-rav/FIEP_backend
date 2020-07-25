@@ -48,7 +48,7 @@ namespace BusinessTier.Services
                         ModifyDate = item.ModifyDate,
                         IsExpired = item.IsExpired,
                         IsDeleted = item.IsDeleted,
-                        ImageUrl = item.ImageUrl
+                        ImageUrl = item.ImageUrl,
                     };
                     foreach (var eventSub in item.EventSubscription)
                     {
@@ -60,6 +60,16 @@ namespace BusinessTier.Services
                         subs.Add(eventSubscription);
                     }
                     tmp.EventSubscription = subs;
+
+                    var tmpGroup = new GroupInformation()
+                    {
+                        GroupId = item.GroupId,
+                        GroupName = item.Group.GroupName,
+                        GroupImageUrl = item.Group.GroupImageUrl,
+                        IsDeleted = item.Group.IsDeleted,
+                    };
+                    tmp.Group = tmpGroup;
+
                     events.Add(tmp);
                 }
                 IQueryable<Event> eventTable = events.Select(x => x).AsQueryable<Event>();
@@ -99,6 +109,7 @@ namespace BusinessTier.Services
                         subs.Add(groupSubscription);
                     }
                     tmp.GroupSubscription = subs;
+
                     groups.Add(tmp);
                 }
                 IQueryable<GroupInformation> eventTable = groups.Select(x => x).AsQueryable<GroupInformation>();
