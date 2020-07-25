@@ -7,6 +7,7 @@ using DataTier.UOW;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace BusinessTier.Handlers
                 GroupId = group.GroupId,
                 GroupName = group.GroupName,
                 GroupImageUrl = group.GroupImageUrl,
-                GroupFollower = group.GroupSubscription.Count,
+                GroupFollower = group.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count,
             };
             return new ResponseBase()
             {

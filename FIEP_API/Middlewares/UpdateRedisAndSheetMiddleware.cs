@@ -59,7 +59,8 @@ namespace FIEP_API.Middlewares
                     {
                         EventSubscription eventSubscription = new EventSubscription()
                         {
-                            UserId = eventSub.UserId
+                            UserId = eventSub.UserId,
+                            IsDeleted = eventSub.IsDeleted
                         };
                         subs.Add(eventSubscription);
                     }
@@ -90,7 +91,8 @@ namespace FIEP_API.Middlewares
                     {
                         GroupSubscription groupSubscription = new GroupSubscription()
                         {
-                            UserId = eventSub.UserId
+                            UserId = eventSub.UserId,
+                            IsDeleted = eventSub.IsDeleted
                         };
                         subs.Add(groupSubscription);
                     }

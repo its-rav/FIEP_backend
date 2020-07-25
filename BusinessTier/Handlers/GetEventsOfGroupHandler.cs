@@ -98,11 +98,11 @@ namespace BusinessTier.Handlers
                 case EventFields.Follower: //sort by number of follower
                     if (request.isDesc)
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Count).ToList();
+                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     else
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Count).ToList();
+                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     break;
             }
@@ -138,7 +138,7 @@ namespace BusinessTier.Handlers
                             eventID = item.EventId,
                             eventName = item.EventName,
                             eventImageUrl = item.ImageUrl,
-                            follower = item.EventSubscription.Count,
+                            follower = item.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count,
                             timeOccur = item.TimeOccur,
                             location = item.Location,
                             groupID = item.GroupId,

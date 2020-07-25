@@ -69,11 +69,11 @@ namespace BusinessTier.Handlers
                 case GroupFields.Follower: //sort by number of follower
                     if (request.isDesc)
                     {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderByDescending(x => x.GroupSubscription.Count).ToList();
+                        listGroupsAfterSort = listGroupsAfterPaging.OrderByDescending(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     else
                     {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderBy(x => x.GroupSubscription.Count).ToList();
+                        listGroupsAfterSort = listGroupsAfterPaging.OrderBy(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     break;
             }
@@ -107,7 +107,7 @@ namespace BusinessTier.Handlers
                             groupID = item.GroupId,
                             groupName = item.GroupName,
                             groupImageUrl = item.GroupImageUrl,
-                            groupFollower = item.GroupSubscription.Count,
+                            groupFollower = item.GroupSubscription.Where(x=>x.IsDeleted==false).ToList().Count,
                         };
                         listOfGroups.Add(groupObjl);
                         break;
