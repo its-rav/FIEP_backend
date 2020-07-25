@@ -76,8 +76,8 @@ namespace BusinessTier.Utilities
             SpreadsheetsResource.ValuesResource.BatchUpdateRequest request = service.Spreadsheets.Values.BatchUpdate(requestBody, spreadsheetId);
 
             // To execute asynchronously in an async method, replace `request.Execute()` as shown:
-            BatchUpdateValuesResponse response = request.Execute();
-            // Data.BatchUpdateValuesResponse response = await request.ExecuteAsync();
+            //BatchUpdateValuesResponse response = request.Execute();
+            request.ExecuteAsync();
         }
         private List<ValueRange> EventsToValueRanges(List<EventStatisticDTO> list)
         {
@@ -183,8 +183,14 @@ namespace BusinessTier.Utilities
         {
             List<EventStatisticDTO> result = new List<EventStatisticDTO>();
 
+
+
             var listActiveEvents = _unitOfWork.Repository<Event>()
                         .FindAllByProperty(x => x.IsDeleted == false && x.IsExpired==false);
+            if (listActiveEvents == null)
+            {
+                return result;
+            }
             foreach (var activeEvent in listActiveEvents)
             {
                 int followers = _unitOfWork.Repository<EventSubscription>().FindAllByProperty(x => x.EventId == activeEvent.EventId).Count();
@@ -207,6 +213,12 @@ namespace BusinessTier.Utilities
 
             var listActiveGroup = _unitOfWork.Repository<GroupInformation>()
                         .FindAllByProperty(x =>x.IsDeleted==false);
+
+            if (listActiveGroup == null)
+            {
+                return result;
+            }
+
             foreach (var group in listActiveGroup)
             {
                 int followers = _unitOfWork.Repository<GroupSubscription>().FindAllByProperty(x => x.GroupId == group.GroupId).Count();

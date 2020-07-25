@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using FirebaseAdmin.Messaging;
 using DataTier.UOW;
+using BusinessTier.Utilities;
 
 namespace BusinessTier.Services
 {
@@ -20,6 +21,11 @@ namespace BusinessTier.Services
 
         public MainWorker(ILogger<MainWorker> logger, Microsoft.Extensions.Configuration.IConfiguration configuration,IUnitOfWork unitOfWork)
         {
+
+            _unitOfWork = unitOfWork;
+
+            ggSheetUtil = new GoogleSheetApiUtils(_unitOfWork);
+
             _logger = logger;
             string connectionString = configuration.GetConnectionString("RedisCacheConnection");
             _redis =ConnectionMultiplexer.Connect(connectionString);
@@ -33,8 +39,8 @@ namespace BusinessTier.Services
                 _logger.LogInformation($"Fail to connect to Redis");
             }
 
-            _unitOfWork = unitOfWork;
         }
+        private GoogleSheetApiUtils ggSheetUtil;
         private ConnectionMultiplexer _redis;
         private IUnitOfWork _unitOfWork;
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -126,8 +132,10 @@ namespace BusinessTier.Services
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(60000, stoppingToken);
+                _logger.LogInformation("( 10mins ) Worker running at: {time}", DateTimeOffset.Now);
+                await Task.Delay(600000, stoppingToken);
+
+                ggSheetUtil.UpdateDataToSheet();
             }
             _redis.GetSubscriber().Unsubscribe("NotificationChannel");
         }
