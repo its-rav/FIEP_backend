@@ -115,7 +115,7 @@ namespace BusinessTier.Handlers
                     case "short":
                         var eventObj = new
                         {
-                            eventID = item.EventId,
+                            eventId = item.EventId,
                             eventName = item.EventName
                         };
 
@@ -124,7 +124,7 @@ namespace BusinessTier.Handlers
                     case "medium":
                         var eventObjm = new
                         {
-                            eventID = item.EventId,
+                            eventId = item.EventId,
                             eventName = item.EventName,
                             eventImageUrl = item.ImageUrl,
                             timeOccur = item.TimeOccur,
@@ -135,7 +135,7 @@ namespace BusinessTier.Handlers
                     default:
                         var eventObjl = new
                         {
-                            eventID = item.EventId,
+                            eventId = item.EventId,
                             eventName = item.EventName,
                             eventImageUrl = item.ImageUrl,
                             follower = item.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count,

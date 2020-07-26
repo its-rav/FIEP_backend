@@ -12,5 +12,6 @@ namespace BusinessTier.DTO
         public string EventImageUrl { get; set; }
         public int Follower { get; set; }
         public GroupDTO Group { get; set; }
+        public string Location { get; set; }
     }
 }

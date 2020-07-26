@@ -79,7 +79,7 @@ namespace BusinessTier.Handlers
                     case "short":
                         var postObj = new
                         {
-                            postID = item.PostId,
+                            postId = item.PostId,
                             postContent = item.PostContent
                         };
 
@@ -88,7 +88,7 @@ namespace BusinessTier.Handlers
                     case "medium":
                         var postObjm = new
                         {
-                            postID = item.PostId,
+                            postId = item.PostId,
                             postContent = item.PostContent,
                             imageUrl = item.ImageUrl,
                             createDate = item.CreateDate
@@ -98,7 +98,7 @@ namespace BusinessTier.Handlers
                     default:
                         var postObjl = new
                         {
-                            postID = item.PostId,
+                            postId = item.PostId,
                             postContent = item.PostContent,
                             imageUrl = item.ImageUrl,
                             createDate = item.CreateDate,

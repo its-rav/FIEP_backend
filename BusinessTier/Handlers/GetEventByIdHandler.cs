@@ -56,6 +56,7 @@ namespace BusinessTier.Handlers
                 EventImageUrl = result.ImageUrl,
                 Follower = result.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count,
                 TimeOccur = (DateTime)result.TimeOccur,
+                Location = result.Location,
                 Group = new GroupDTO()
                 {
                     GroupId = result.GroupId,
