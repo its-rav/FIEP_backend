@@ -86,7 +86,7 @@ namespace BusinessTier.Handlers
                     case "short":
                         var groupObj = new
                         {
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
                             groupName = item.GroupName
                         };
 
@@ -95,7 +95,7 @@ namespace BusinessTier.Handlers
                     case "medium":
                         var groupObjm = new
                         {
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
                             groupName = item.GroupName,
                             imageUrl = item.GroupImageUrl,
                         };
@@ -104,7 +104,7 @@ namespace BusinessTier.Handlers
                     default:
                         var groupObjl = new
                         {
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
                             groupName = item.GroupName,
                             groupImageUrl = item.GroupImageUrl,
                             groupFollower = item.GroupSubscription.Where(x=>x.IsDeleted==false).ToList().Count,
