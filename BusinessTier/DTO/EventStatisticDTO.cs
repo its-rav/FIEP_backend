@@ -14,6 +14,8 @@ namespace BusinessTier.DTO
 
         public int Followers { get; set; }
 
+        public String State { get; set; }
+
         public int PostCount { get; set; }
 
         public static PropertyInfo[] GetAllProperties()

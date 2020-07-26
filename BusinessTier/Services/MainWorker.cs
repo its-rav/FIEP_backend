@@ -133,9 +133,11 @@ namespace BusinessTier.Services
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("( 10mins ) Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(600000, stoppingToken);
 
                 ggSheetUtil.UpdateDataToSheet();
+
+                await Task.Delay(600000, stoppingToken);
+
             }
             _redis.GetSubscriber().Unsubscribe("NotificationChannel");
         }
