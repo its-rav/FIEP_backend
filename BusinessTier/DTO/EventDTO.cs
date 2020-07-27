@@ -11,6 +11,7 @@ namespace BusinessTier.DTO
         public DateTime TimeOccur { get; set; }
         public string EventImageUrl { get; set; }
         public int Follower { get; set; }
-        public List<PostDTO> ListOfPosts { get; set; }
+        public GroupDTO Group { get; set; }
+        public string Location { get; set; }
     }
 }

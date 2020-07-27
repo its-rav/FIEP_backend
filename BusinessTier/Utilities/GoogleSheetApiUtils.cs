@@ -19,6 +19,8 @@ namespace BusinessTier.Utilities
         static string ApplicationName = "FIEP Data";
         static readonly string eventSheet = "Event Data";
         static readonly string groupSheet = "Group Data";
+
+        static readonly string userSheet = "User Data";
         static readonly int startRow = 2;
         private SheetsService service;
 
@@ -118,6 +120,44 @@ namespace BusinessTier.Utilities
             return result;
         }
 
+        private List<ValueRange> UsersToValueRanges(List<UserStatisticDTO> list)
+        {
+            List<ValueRange> result = new List<ValueRange>();
+            List<object> usersHeaders = this.getHeaders(UserStatisticDTO.GetAllProperties());
+
+            result.Add(new ValueRange()
+            {
+                Range = $"{userSheet}!A1:{(char)(64 + usersHeaders.Count())}",
+                Values = new List<IList<object>>()
+                    {
+                        usersHeaders
+                    }
+            });
+
+            int row = startRow - 1;
+            foreach (var dto in list)
+            {
+                row++;
+                String range = $"{userSheet}!A{row}:{(char)(64 + usersHeaders.Count())}";
+
+                List<object> values = new List<object>();
+                foreach (var header in usersHeaders)
+                {
+                    values.Add(UserStatisticDTO.GetPropValue(dto, (string)header));
+                }
+
+                result.Add(new ValueRange()
+                {
+                    Range = range,
+                    Values = new List<IList<object>>()
+                    {
+                        values
+                    }
+                });
+            }
+
+            return result;
+        }
         private List<ValueRange> GroupsToValueRanges(List<GroupStatisticDTO> list)
         {
             List<ValueRange> result = new List<ValueRange>();
@@ -161,10 +201,13 @@ namespace BusinessTier.Utilities
             List<GroupStatisticDTO> groupData = this.GetGroupsData();
             List<EventStatisticDTO> eventData = this.GetEventsData();
 
+            List<UserStatisticDTO> userData = this.GetUserData();
+
             List<ValueRange> objs = new List<ValueRange>();
 
             objs.AddRange(this.EventsToValueRanges(eventData));
             objs.AddRange(this.GroupsToValueRanges(groupData));
+            objs.AddRange(this.UsersToValueRanges(userData));
 
             return objs;
         }
@@ -199,6 +242,7 @@ namespace BusinessTier.Utilities
                 {
                     EventID = activeEvent.EventId,
                     EventName = activeEvent.EventName,
+                    State=activeEvent.ApprovalState==-1?"Denied": activeEvent.ApprovalState == 0 ?"Pending":"Approved",
                     Followers=followers,
                     PostCount=postCount,
                 }) ;
@@ -206,7 +250,30 @@ namespace BusinessTier.Utilities
             }
             return result;
         }
+        private List<UserStatisticDTO> GetUserData()
+        {
+            List<UserStatisticDTO> result = new List<UserStatisticDTO>();
 
+            var listUsers = _unitOfWork.Repository<UserInformation>()
+                        .FindAllByProperty(x => x.IsDeleted == false);
+
+            if (listUsers == null)
+            {
+                return result;
+            }
+            foreach (var user in listUsers)
+            {
+                
+                result.Add(new UserStatisticDTO()
+                {
+                    UserId= user.UserId,
+                    CreateDate= user.CreateDate
+
+                });
+
+            }
+            return result;
+        }
         private List<GroupStatisticDTO> GetGroupsData()
         {
             List<GroupStatisticDTO> result = new List<GroupStatisticDTO>();

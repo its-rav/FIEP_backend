@@ -7,6 +7,7 @@ using DataTier.UOW;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -53,8 +54,15 @@ namespace BusinessTier.Handlers
                 EventId = result.EventId,
                 EventName = result.EventName,
                 EventImageUrl = result.ImageUrl,
-                Follower = result.EventSubscription.Count,
-                TimeOccur = (DateTime)result.TimeOccur
+                Follower = result.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count,
+                TimeOccur = (DateTime)result.TimeOccur,
+                Location = result.Location,
+                Group = new GroupDTO()
+                {
+                    GroupId = result.GroupId,
+                    GroupImageUrl = result.Group.GroupImageUrl,
+                    GroupName = result.Group.GroupName,
+                }
             };
             return new ResponseBase()
             {

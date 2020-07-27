@@ -5,22 +5,15 @@ using System.Text;
 
 namespace BusinessTier.DTO
 {
-    public class EventStatisticDTO
+    class UserStatisticDTO
     {
+        public Guid UserId { get; set; }
 
-        public int EventID { get; set; }
-
-        public string EventName { get; set; }
-
-        public int Followers { get; set; }
-
-        public String State { get; set; }
-
-        public int PostCount { get; set; }
+        public DateTime? CreateDate { get; set; }
 
         public static PropertyInfo[] GetAllProperties()
         {
-            PropertyInfo[] properties =typeof(EventStatisticDTO).GetProperties();
+            PropertyInfo[] properties = typeof(UserStatisticDTO).GetProperties();
             return properties;
         }
         public static object GetPropValue(object src, string propName)

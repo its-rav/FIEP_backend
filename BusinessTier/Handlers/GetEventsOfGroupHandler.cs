@@ -29,7 +29,7 @@ namespace BusinessTier.Handlers
         public async Task<ResponseBase> Handle(GetEventsOfGroupRequest request, CancellationToken cancellationToken)
         {
             List<Event> listEventAfterFilter;
-            if (request.GetGroupId() == null)
+            if (request.GetGroupId() == 0)
             {
                 return new ResponseBase()
                 {
@@ -51,10 +51,7 @@ namespace BusinessTier.Handlers
                     Response = null
                 };
             }
-            else
-            {
-                listEventAfterFilter = _unitOfWork.Repository<Event>().GetAll().Where(x => x.IsDeleted == false).ToList();
-            }
+
             if(request.Query != null)
             {
                 if (request.Query.Trim().Length > 0)
@@ -101,11 +98,11 @@ namespace BusinessTier.Handlers
                 case EventFields.Follower: //sort by number of follower
                     if (request.isDesc)
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Count).ToList();
+                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     else
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Count).ToList();
+                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     break;
             }
@@ -118,7 +115,7 @@ namespace BusinessTier.Handlers
                     case "short":
                         var eventObj = new
                         {
-                            eventID = item.EventId,
+                            eventId = item.EventId,
                             eventName = item.EventName
                         };
 
@@ -127,7 +124,7 @@ namespace BusinessTier.Handlers
                     case "medium":
                         var eventObjm = new
                         {
-                            eventID = item.EventId,
+                            eventId = item.EventId,
                             eventName = item.EventName,
                             eventImageUrl = item.ImageUrl,
                             timeOccur = item.TimeOccur,
@@ -138,10 +135,10 @@ namespace BusinessTier.Handlers
                     default:
                         var eventObjl = new
                         {
-                            eventID = item.EventId,
+                            eventId = item.EventId,
                             eventName = item.EventName,
                             eventImageUrl = item.ImageUrl,
-                            follower = item.EventSubscription.Count,
+                            follower = item.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count,
                             timeOccur = item.TimeOccur,
                             location = item.Location,
                             groupID = item.GroupId,

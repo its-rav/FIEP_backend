@@ -69,11 +69,11 @@ namespace BusinessTier.Handlers
                 case GroupFields.Follower: //sort by number of follower
                     if (request.isDesc)
                     {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderByDescending(x => x.GroupSubscription.Count).ToList();
+                        listGroupsAfterSort = listGroupsAfterPaging.OrderByDescending(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     else
                     {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderBy(x => x.GroupSubscription.Count).ToList();
+                        listGroupsAfterSort = listGroupsAfterPaging.OrderBy(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     break;
             }
@@ -86,7 +86,7 @@ namespace BusinessTier.Handlers
                     case "short":
                         var groupObj = new
                         {
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
                             groupName = item.GroupName
                         };
 
@@ -95,7 +95,7 @@ namespace BusinessTier.Handlers
                     case "medium":
                         var groupObjm = new
                         {
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
                             groupName = item.GroupName,
                             imageUrl = item.GroupImageUrl,
                         };
@@ -104,10 +104,10 @@ namespace BusinessTier.Handlers
                     default:
                         var groupObjl = new
                         {
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
                             groupName = item.GroupName,
                             groupImageUrl = item.GroupImageUrl,
-                            groupFollower = item.GroupSubscription.Count,
+                            groupFollower = item.GroupSubscription.Where(x=>x.IsDeleted==false).ToList().Count,
                         };
                         listOfGroups.Add(groupObjl);
                         break;
