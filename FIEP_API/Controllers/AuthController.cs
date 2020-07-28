@@ -76,9 +76,11 @@ namespace FIEP_API.Controllers
                 userToResponse = new UserDTO()
                 {
                     UserId = newUser.UserId,
-                    //AvatarUrl = newUser.AvatarUrl,
+                    AvatarUrl = null,
                     FullName = newUser.Fullname,
-                    Mail = newUser.Email
+                    Mail = newUser.Email,
+                    RoleId = 2,
+                    Role = "user"
                 };
                 _unitOfWork.Repository<UserInformation>().Insert(newUser);
                 if (!fcmToken.Equals(""))
@@ -106,9 +108,11 @@ namespace FIEP_API.Controllers
                 userToResponse = new UserDTO()
                 {
                     UserId = existingStudent.UserId,
-                    //AvatarUrl = existingStudent.AvatarUrl,
+                    AvatarUrl = existingStudent.AvatarUrl,
                     FullName = existingStudent.Fullname,
-                    Mail = existingStudent.Email
+                    Mail = existingStudent.Email,
+                    RoleId = existingStudent.RoleId,
+                    Role = existingStudent.Role.Rolename
                 };
                 if (!fcmToken.Equals(""))
                 {
