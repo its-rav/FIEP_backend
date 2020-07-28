@@ -10,5 +10,7 @@ namespace BusinessTier.DTO
         public string Mail { get; set; }
         public string FullName { get; set; }
         public string AvatarUrl { get; set; }
+        public int RoleId { get; set; }
+        public string Role { get; set; }
     }
 }
