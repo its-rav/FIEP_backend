@@ -36,7 +36,9 @@ namespace BusinessTier.Handlers
                 UserId = result.UserId,
                 FullName = result.Fullname,
                 Mail = result.Email,
-                AvatarUrl = result.AvatarUrl
+                AvatarUrl = result.AvatarUrl,
+                RoleId = result.RoleId,
+                Role = result.Role.Rolename
             };
             return new ResponseBase()
             {

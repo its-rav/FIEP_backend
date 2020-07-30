@@ -96,7 +96,9 @@ namespace BusinessTier.Handlers
                             userId = item.UserId,
                             fullName = item.Fullname,
                             mail = item.Email,
-                            avatarUrl = item.AvatarUrl
+                            avatarUrl = item.AvatarUrl,
+                            roleId = item.RoleId,
+                            role = item.Role.Rolename
                         };
                         listOfUsers.Add(userObjl);
                         break;
