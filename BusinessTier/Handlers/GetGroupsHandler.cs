@@ -46,7 +46,7 @@ namespace BusinessTier.Handlers
             {
                 if (request.Query.Trim().Length > 0)
                 {
-                    listGroupAfterFilter = listGroupAfterFilter.Where(x => x.GroupName.Contains(request.Query.Trim())).ToList();
+                    listGroupAfterFilter = listGroupAfterFilter.Where(x => x.GroupName.ToLower().Contains(request.Query.Trim().ToLower())).ToList();
                     if (listGroupAfterFilter.Count() <= 0)
                     {
                         return new ResponseBase()
