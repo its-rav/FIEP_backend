@@ -49,11 +49,6 @@ namespace BusinessTier.Handlers
                     Response = 0
                 };
             }
-            //apply paging
-            var listPostsAfterPaging = listPostsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
 
             //apply sort
             var listPostsAfterSort = new List<Post>();
@@ -62,17 +57,23 @@ namespace BusinessTier.Handlers
                 case PostFields.CreateDate: //sort by time occur
                     if (request.isDesc)
                     {
-                        listPostsAfterSort = listPostsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
+                        listPostsAfterSort = listPostsAfterSearch.OrderByDescending(x => x.CreateDate).ToList();
                     }
                     else
                     {
-                        listPostsAfterSort = listPostsAfterPaging.OrderBy(x => x.CreateDate).ToList();
+                        listPostsAfterSort = listPostsAfterSearch.OrderBy(x => x.CreateDate).ToList();
                     }
                     break;
             }
 
+            //apply paging
+            var listPostsAfterPaging = listPostsAfterSort
+               .Skip((request.PageNumber - 1) * request.PageSize)
+               .Take(request.PageSize)
+               .ToList();
+
             var listOfPosts = new List<dynamic>();
-            foreach (var item in listPostsAfterSort)
+            foreach (var item in listPostsAfterPaging)
             {
                 switch (request.FieldSize)
                 {

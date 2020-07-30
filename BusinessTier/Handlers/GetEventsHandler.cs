@@ -62,11 +62,6 @@ namespace BusinessTier.Handlers
                 listEventAfterFilter = listEventAfterFilter.Where(x => (DateTime)x.TimeOccur >= DateTime.Now).ToList();
             }
 
-            //apply paging
-            var listEventsAfterPaging = listEventAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
 
             //apply sort
             var listEventsAfterSort = new List<Event>();
@@ -76,27 +71,33 @@ namespace BusinessTier.Handlers
                 case EventFields.TimeOccur: //sort by time occur
                     if (request.isDesc)
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.TimeOccur).ToList();
+                        listEventsAfterSort = listEventAfterFilter.OrderByDescending(x => x.TimeOccur).ToList();
                     }
                     else
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.TimeOccur).ToList();
+                        listEventsAfterSort = listEventAfterFilter.OrderBy(x => x.TimeOccur).ToList();
                     }
                     break;
                 case EventFields.Follower: //sort by number of follower
                     if (request.isDesc)
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderByDescending(x => x.EventSubscription.Where(x=>x.IsDeleted==false).ToList().Count).ToList();
+                        listEventsAfterSort = listEventAfterFilter.OrderByDescending(x => x.EventSubscription.Where(x=>x.IsDeleted==false).ToList().Count).ToList();
                     }
                     else
                     {
-                        listEventsAfterSort = listEventsAfterPaging.OrderBy(x => x.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
+                        listEventsAfterSort = listEventAfterFilter.OrderBy(x => x.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     break;
             }
 
+            //apply paging
+            var listEventsAfterPaging = listEventsAfterSort
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
             var listOfEvents = new List<dynamic>();
-            foreach (var item in listEventsAfterSort)
+            foreach (var item in listEventsAfterPaging)
             {
                 switch (request.FieldSize)
                 {
@@ -142,7 +143,7 @@ namespace BusinessTier.Handlers
             var response = new
             {
                 data = listOfEvents,
-                currentPage = request.PageNumber,
+                currentPage  = request.PageNumber,
                 totalPages = Math.Ceiling((double)listEventAfterFilter.ToList().Count / request.PageSize)
             };
             return new ResponseBase()
