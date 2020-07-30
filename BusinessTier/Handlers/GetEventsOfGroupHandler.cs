@@ -141,7 +141,8 @@ namespace BusinessTier.Handlers
                             follower = item.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count,
                             timeOccur = item.TimeOccur,
                             location = item.Location,
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
+                            groupName = item.Group.GroupName,
                             createDate = item.CreateDate,
                             approveState = item.ApprovalState
                         };

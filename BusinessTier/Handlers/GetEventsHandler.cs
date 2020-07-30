@@ -41,7 +41,7 @@ namespace BusinessTier.Handlers
             {
                 if (request.Query.Trim().Length > 0)
                 {
-                    listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.Contains(request.Query.Trim())).ToList();
+                    listEventAfterFilter = listEventAfterFilter.Where(x => x.EventName.ToLower().Contains(request.Query.Trim().ToLower())).ToList();
                     if (listEventAfterFilter.Count() <= 0)
                     {
                         return new ResponseBase()
@@ -129,7 +129,8 @@ namespace BusinessTier.Handlers
                             follower = item.EventSubscription.Where(x => x.IsDeleted == false).ToList().Count,
                             timeOccur = item.TimeOccur,
                             location = item.Location,
-                            groupID = item.GroupId,
+                            groupId = item.GroupId,
+                            groupName = item.Group.GroupName,
                             createDate = item.CreateDate,
                             approveState = item.ApprovalState
                         };

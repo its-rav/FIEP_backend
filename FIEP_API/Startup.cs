@@ -99,7 +99,7 @@ namespace FIEP_API
 
             //middleware
             //app.UseAuthorizationMiddleware();
-            app.UseUpdateRedisAndSheetMiddleware();
+            //app.UseUpdateRedisAndSheetMiddleware();
 
             var pathToKey = Path.Combine(Directory.GetCurrentDirectory(), "keys", "firebase-fiep-private-key.json");
             FirebaseApp.Create(new AppOptions

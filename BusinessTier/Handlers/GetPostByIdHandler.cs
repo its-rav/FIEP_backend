@@ -33,7 +33,8 @@ namespace BusinessTier.Handlers
             {
                 PostId = result.PostId,
                 PostContent = result.PostContent,
-                ImageUrl = result.ImageUrl
+                ImageUrl = result.ImageUrl,
+                CreateDate = (DateTime) result.CreateDate
             };
             return new ResponseBase()
             {
