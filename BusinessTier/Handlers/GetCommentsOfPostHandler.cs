@@ -30,11 +30,6 @@ namespace BusinessTier.Handlers
                     Response = null
                 };
             }
-            //apply paging
-            var listCommentsAfterPaging = listCommentsAfterSearch
-               .Skip((request.PageNumber - 1) * request.PageSize)
-               .Take(request.PageSize)
-               .ToList();
 
             //apply sort
             var listCommentsAfterSort = new List<Comment>();
@@ -43,17 +38,23 @@ namespace BusinessTier.Handlers
                 case CommentFields.CreateDate: //sort by time occur
                     if (request.isDesc)
                     {
-                        listCommentsAfterSort = listCommentsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
+                        listCommentsAfterSort = listCommentsAfterSearch.OrderByDescending(x => x.CreateDate).ToList();
                     }
                     else
                     {
-                        listCommentsAfterSort = listCommentsAfterPaging.OrderBy(x => x.CreateDate).ToList();
+                        listCommentsAfterSort = listCommentsAfterSearch.OrderBy(x => x.CreateDate).ToList();
                     }
                     break;
             }
 
+            //apply paging
+            var listCommentsAfterPaging = listCommentsAfterSort
+               .Skip((request.PageNumber - 1) * request.PageSize)
+               .Take(request.PageSize)
+               .ToList();
+
             var listOfComments = new List<dynamic>();
-            foreach (var item in listCommentsAfterSort)
+            foreach (var item in listCommentsAfterPaging)
             {
                 switch (request.FieldSize)
                 {

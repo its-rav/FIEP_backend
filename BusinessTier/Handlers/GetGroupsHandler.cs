@@ -57,11 +57,6 @@ namespace BusinessTier.Handlers
                 }
             }
             
-            //apply paging
-            var listGroupsAfterPaging = listGroupAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
             //apply sort
             var listGroupsAfterSort = new List<GroupInformation>();
             switch (request.SortBy)
@@ -69,17 +64,23 @@ namespace BusinessTier.Handlers
                 case GroupFields.Follower: //sort by number of follower
                     if (request.isDesc)
                     {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderByDescending(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
+                        listGroupsAfterSort = listGroupAfterFilter.OrderByDescending(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     else
                     {
-                        listGroupsAfterSort = listGroupsAfterPaging.OrderBy(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
+                        listGroupsAfterSort = listGroupAfterFilter.OrderBy(x => x.GroupSubscription.Where(x => x.IsDeleted == false).ToList().Count).ToList();
                     }
                     break;
             }
 
+            //apply paging
+            var listGroupsAfterPaging = listGroupsAfterSort
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
             var listOfGroups = new List<dynamic>();
-            foreach (var item in listGroupsAfterSort)
+            foreach (var item in listGroupsAfterPaging)
             {
                 switch (request.FieldSize)
                 {

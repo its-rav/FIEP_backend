@@ -39,11 +39,6 @@ namespace BusinessTier.Handlers
                 }
             }
             
-            //apply paging
-            var listNotificationsAfterPaging = listNotificationsAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
 
             var listNotificationssAfterSort = new List<Notification>();
             switch (request.SortBy)
@@ -51,17 +46,23 @@ namespace BusinessTier.Handlers
                 case NotificationFields.CreateDate: //sort by number of follower
                     if (request.isDesc)
                     {
-                        listNotificationssAfterSort = listNotificationsAfterPaging.OrderByDescending(x => x.CreateDate).ToList();
+                        listNotificationssAfterSort = listNotificationsAfterFilter.OrderByDescending(x => x.CreateDate).ToList();
                     }
                     else
                     {
-                        listNotificationssAfterSort = listNotificationsAfterPaging.OrderBy(x => x.CreateDate).ToList();
+                        listNotificationssAfterSort = listNotificationsAfterFilter.OrderBy(x => x.CreateDate).ToList();
                     }
                     break;
             }
 
+            //apply paging
+            var listNotificationsAfterPaging = listNotificationssAfterSort
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
             var result = new List<NotificationDTO>();
-            foreach (var item in listNotificationssAfterSort)
+            foreach (var item in listNotificationsAfterPaging)
             {
                 NotificationDTO notificationDTO = new NotificationDTO()
                 {

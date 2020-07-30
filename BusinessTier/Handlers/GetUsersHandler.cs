@@ -45,11 +45,6 @@ namespace BusinessTier.Handlers
                 };
             }
 
-            //apply paging
-            var listUsersAfterPaging = listUsersAfterFilter
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToList();
             //apply sort
             var listUsersAfterSort = new List<UserInformation>();
             switch (request.SortBy)
@@ -57,17 +52,23 @@ namespace BusinessTier.Handlers
                 case UserInformationFields.FullName: //sort by time occur
                     if (request.isDesc)
                     {
-                        listUsersAfterSort = listUsersAfterPaging.OrderByDescending(x => x.Fullname).ToList();
+                        listUsersAfterSort = listUsersAfterFilter.OrderByDescending(x => x.Fullname).ToList();
                     }
                     else
                     {
-                        listUsersAfterSort = listUsersAfterPaging.OrderBy(x => x.Fullname).ToList();
+                        listUsersAfterSort = listUsersAfterFilter.OrderBy(x => x.Fullname).ToList();
                     }
                     break;
             }
 
+            //apply paging
+            var listUsersAfterPaging = listUsersAfterSort
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
             var listOfUsers = new List<dynamic>();
-            foreach (var item in listUsersAfterSort)
+            foreach (var item in listUsersAfterPaging)
             {
                 switch (request.FieldSize)
                 {
