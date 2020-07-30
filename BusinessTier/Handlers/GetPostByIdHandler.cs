@@ -34,7 +34,8 @@ namespace BusinessTier.Handlers
                 PostId = result.PostId,
                 PostContent = result.PostContent,
                 ImageUrl = result.ImageUrl,
-                CreateDate = (DateTime) result.CreateDate
+                CreateDate = (DateTime) result.CreateDate,
+                EventName = result.Event.EventName
             };
             return new ResponseBase()
             {
