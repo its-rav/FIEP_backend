@@ -103,7 +103,8 @@ namespace BusinessTier.Handlers
                             postContent = item.PostContent,
                             imageUrl = item.ImageUrl,
                             createDate = item.CreateDate,
-                            eventId = item.EventId
+                            eventId = item.EventId,
+                            eventName = item.Event.EventName
                         };
 
                         listOfPosts.Add(postObjl);

@@ -30,7 +30,16 @@ namespace BusinessTier.Handlers
                     Response = null
                 };
             }
-            var listOfId = listOfEventSubs.Select(x => x.EventId).ToList();
+            var listOfId = new List<dynamic>();
+            foreach (var item in listOfEventSubs)
+            {
+                var sub = new
+                {
+                    EventId = item.EventId,
+                    EventName = item.Event.EventName,
+                };
+                listOfId.Add(sub);
+            }
             return new ResponseBase()
             {
                 Response = listOfId

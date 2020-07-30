@@ -55,7 +55,7 @@ namespace DataTier.Models
                 entity.Property(e => e.CommentId)
                     .HasColumnName("CommentID")
                     .HasMaxLength(128)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.Content)
                     .IsRequired()
@@ -97,7 +97,7 @@ namespace DataTier.Models
 
                 entity.Property(e => e.EventName)
                     .HasMaxLength(128)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.GroupId).HasColumnName("GroupID");
 
@@ -107,7 +107,7 @@ namespace DataTier.Models
 
                 entity.Property(e => e.Location)
                     .HasMaxLength(128)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.ModifyDate)
                     .HasColumnType("datetime")
@@ -136,7 +136,7 @@ namespace DataTier.Models
 
                 entity.Property(e => e.EventActivityDescription)
                     .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
 
@@ -207,7 +207,7 @@ namespace DataTier.Models
                 entity.Property(e => e.GroupName)
                     .IsRequired()
                     .HasMaxLength(128)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.ModifyDate)
                     .HasColumnType("datetime")
@@ -262,7 +262,7 @@ namespace DataTier.Models
 
                 entity.Property(e => e.ImageUrl)
                     .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.ModifyDate)
                     .HasColumnType("datetime")
@@ -315,15 +315,15 @@ namespace DataTier.Models
 
                 entity.Property(e => e.Title)
                     .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.Body)
                     .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.ImageUrl)
                     .HasMaxLength(256)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
 
                 entity.Property(e => e.UserFCMTokens)
@@ -384,12 +384,12 @@ namespace DataTier.Models
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(128)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.Fullname)
                     .IsRequired()
                     .HasMaxLength(128)
-                    .IsUnicode(false);
+                    .IsUnicode(true);
 
                 entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
 
